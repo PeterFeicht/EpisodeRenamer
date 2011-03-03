@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
@@ -7,7 +8,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using System.Diagnostics;
 
 namespace EpisodeRenamer
 {
@@ -84,14 +84,7 @@ namespace EpisodeRenamer
 				btnEditClipboardData.Enabled = value;
 				btnSaveClipboardData.Enabled = value;
 
-				if(value)
-				{
-					txtNameFile.Text = "(Clipboard data)";
-				}
-				else
-				{
-					txtNameFile.Text = "";
-				}
+				txtNameFile.Text = value ? "(Clipboard data)" : "";
 			}
 		}
 
@@ -111,7 +104,6 @@ namespace EpisodeRenamer
 				{
 					btnEditClipboardData.Enabled = false;
 					btnSaveClipboardData.Enabled = false;
-					InvalidateFilenames();
 					txtNameFile.Text = "(Monitoring clipboard, click '" + btnReadNames.Text + "' or uncheck the box to finish)";
 
 					nextClipboardViewer = (IntPtr)SetClipboardViewer((int)this.Handle);
@@ -435,12 +427,16 @@ You can also select prefixes for the season and episode numbers as well as separ
 				chkMonitorClipboard.Checked = false;
 
 				txtNameFile.Text = openNameFile.FileName;
+				
+				if(btnReadNames.Enabled)
+					btnReadNames.PerformClick();
 			}
 		}
 
 		private void txtEpisodeFolder_TextChanged(object sender, EventArgs e)
 		{
-			InvalidateFilenames();
+			if(!Directory.Exists(txtEpisodeFolder.Text))
+				InvalidateFilenames();
 		}
 
 		private void txtEpisodeFolder_KeyDown(object sender, KeyEventArgs e)
@@ -461,6 +457,9 @@ You can also select prefixes for the season and episode numbers as well as separ
 
 		private void txtNameFile_TextChanged(object sender, EventArgs e)
 		{
+			if(File.Exists(txtNameFile.Text) || MonitoringClipboard || NamesFromClipboard || (txtNameFile.Text == ""))
+				return;
+				
 			InvalidateFilenames();
 		}
 
@@ -621,6 +620,7 @@ You can also select prefixes for the season and episode numbers as well as separ
 			{
 				btnEditClipboardData.Enabled = false;
 				MessageBox.Show("The clipboard data is empty.");
+				NamesFromClipboard = false;
 				return;
 			}
 
