@@ -79,6 +79,7 @@
       <DependentUpon>CheckClipboardDataForm.cs</DependentUpon>
     </Compile>
     <Compile Include="EpisodeEntry.cs" />
+    <Compile Include="IWebsiteFilter.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
