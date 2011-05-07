@@ -556,33 +556,48 @@ You can also select prefixes for the season and episode numbers as well as separ
 		{
 			bool error = false;
 			List<Exception> exceptions = new List<Exception>();
+			int renamed = 0;
 
 			foreach(EpisodeEntry item in episodes)
 			{
-				if(!item.PerformRename())
+				if(item.PerformRename())
+				{
+					if(item.Moved)
+						renamed++;
+				}
+				else
 				{
 					error = true;
 					exceptions.Add(item.MoveException);
 				}
 			}
 
+			StringBuilder sb = new StringBuilder();
+			if(renamed == 1)
+				sb.Append("One file has");
+			else
+				sb.AppendFormat("{0} files have", renamed);
+			sb.AppendLine(" been renamed.");
+
 			if(error)
 			{
-				StringBuilder sb = new StringBuilder("One or more errors occurred while renaming the files:");
-				sb.AppendLine();
+				sb.AppendLine("One or more errors occurred while renaming the files:");
 
 				foreach(Exception ex in exceptions)
 					sb.AppendLine(ex.Message);
-
-				MessageBox.Show(sb.ToString(), "Finished", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 			}
 			else
 			{
-				MessageBox.Show("All files have successfully been renamed.", "Finished", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				if(renamed == 0)
+					sb = new StringBuilder("No files have been renamed.");
+				else
+					sb.AppendLine("All files have successfully been renamed.");
 				episodes.Clear();
 				InvalidateFilenames();
 				btnReadFiles.PerformClick();
 			}
+
+			MessageBox.Show(sb.ToString(), "Finished", MessageBoxButtons.OK, error ? MessageBoxIcon.Warning : MessageBoxIcon.Information);
 		}
 
 		#endregion events
