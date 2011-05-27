@@ -48,6 +48,6 @@ namespace EpisodeRenamer
 		/// Filters any episode information from the URL set for this instance.
 		/// </summary>
 		/// <returns>The number of episode names filtered.</returns>
-		int FilterEpisodeInformation();
+		int Filter();
 	}
 }

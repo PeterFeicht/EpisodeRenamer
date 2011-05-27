@@ -18,7 +18,7 @@ namespace EpisodeRenamer
 		// Imports for setting up a clipboard watch to grab episode names copied
 
 		[DllImport("User32.dll")]
-		protected static extern int SetClipboardViewer(int hWndNewViewer);
+		public static extern int SetClipboardViewer(int hWndNewViewer);
 
 		[DllImport("User32.dll", CharSet = CharSet.Auto)]
 		public static extern bool ChangeClipboardChain(IntPtr hWndRemove, IntPtr hWndNewNext);
@@ -47,6 +47,7 @@ namespace EpisodeRenamer
 		bool nextClipboardViewerSet = false;
 		string clipboardData = "";
 		StringBuilder sbClipboardData = new StringBuilder();
+		string folderName = "";
 
 		/// <summary>
 		/// A list of regular expressions for filenames that should not be added to the episode list when parsing.
@@ -99,6 +100,7 @@ namespace EpisodeRenamer
 				monitoringClipboard = value;
 				btnPasteNames.Enabled = !value;
 				txtNameFile.ReadOnly = value;
+				chkUseFolderName.Enabled = !value;
 
 				if(value)
 				{
@@ -135,7 +137,8 @@ namespace EpisodeRenamer
 
 			try
 			{
-				files = Directory.GetFiles(path);	
+				files = Directory.GetFiles(path);
+				folderName = Path.GetFileName(Path.GetFullPath(path));
 			}
 			catch
 			{
@@ -148,7 +151,7 @@ namespace EpisodeRenamer
 				{
 					if(Array.Exists<string>( FilenameBlacklist, (string pat) => Regex.IsMatch(item, pat, RegexOptions.IgnoreCase | RegexOptions.Singleline) ))
 						continue;
-
+					
 					episodes.Add(new EpisodeEntry(item));
 				}
 			}
@@ -235,6 +238,11 @@ namespace EpisodeRenamer
 					e = (EpisodeEntry)episodes[idx];
 				}
 
+				if(chkUseFolderName.Checked)
+					e.Series = folderName;
+				else
+					e.ResetSeries();
+
 				e.NewNameString = line.Trim();
 				e.NewFilename = EpisodeEntry.FormatFilename(e.Series, p, name, Path.GetExtension(e.OldFilename));
 				e.Enabled = (e.GetEntryType() != EpisodeEntry.EntryType.Yellow);
@@ -300,26 +308,12 @@ namespace EpisodeRenamer
 		}
 
 		/// <summary>
-		/// Rereads all values and auto-sizes the columns of dataGridView.
+		/// Rereads all values and auto-sizes the columns of the dataGridView.
 		/// </summary>
 		void UpdateGridView()
 		{
 			episodes.ResetBindings(false);
 			dataGridView.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
-		}
-
-		/// <summary>
-		/// Checks, if the nextClipboardViewer field differs from IntPtr.Zero, and if it does, 
-		/// calls ChangeClipboardChain to unlink this window from the clipboard watching chain.
-		/// </summary>
-		void UnlinkClipboard()
-		{
-			if(nextClipboardViewerSet)
-			{
-				ChangeClipboardChain(this.Handle, nextClipboardViewer);
-				nextClipboardViewer = IntPtr.Zero;
-				nextClipboardViewerSet = false;
-			}
 		}
 
 		#endregion methods
@@ -336,14 +330,15 @@ namespace EpisodeRenamer
 		// Paint DataGridView row background
 		private void dataGridView_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
 		{
-			EpisodeEntry entry = (EpisodeEntry)episodes[e.RowIndex];
-			EpisodeEntry.EntryType type = entry.GetEntryType();
+			EpisodeEntry entry = episodes[e.RowIndex] as EpisodeEntry;
+			if(entry == null)
+				return;
 
 			e.PaintParts &= ~DataGridViewPaintParts.Background;
 
 			// Determine whether the cell should be painted
 			// with the custom background.
-			if(type != EpisodeEntry.EntryType.None)
+			if(entry.GetEntryType() != EpisodeEntry.EntryType.None)
 			{
 				// Calculate the bounds of the row.
 				Rectangle rowBounds = new Rectangle(
@@ -355,7 +350,7 @@ namespace EpisodeRenamer
 				// Paint the custom background.
 				Color color;
 				Brush br;
-				switch(type)
+				switch(entry.GetEntryType())
 				{
 					case EpisodeEntry.EntryType.Green:
 						color = Color.Green;
@@ -371,7 +366,8 @@ namespace EpisodeRenamer
 						color = Color.LightGray;
 						break;
 					default:
-						return;
+						color = Color.Cyan;
+						break;
 				}
 				if(!entry.Enabled)
 					br = new HatchBrush(HatchStyle.Percent05, Color.Gray, color);
@@ -387,10 +383,11 @@ namespace EpisodeRenamer
 		{
 			string help = @"Firstly, choose the folder containing the episode files to be renamed,
 or enter the path manually.
-Then you can choose between using a file containing the episode names, pasting the episode names from the clipboard or automatically reading the episode names from the clipboard when they are copied, one at a time.
-The episode names must not cintain the name of the series, or the matching of the episode numbers will not work.
+Then you can choose between using a file containing the episode names, pasting the episode names from the clipboard or automatically reading the episode names from the clipboard as they are copied, one at a time.
+The episode names must not contain the name of the series, or the matching of the episode numbers will not work.
 
-Secondly, press the 'Read original filenames' and 'Read episode names' buttons to populate the grid with the files to be renamed and the new names respectively. When using the automatic clipboard mode, press 'Read episode names' or uncheck the checkbox to stop monitoring and confirm the data.";
+Secondly, press the 'Read original filenames' and 'Read episode names' buttons to populate the grid with the files to be renamed and the new names respectively. When using the automatic clipboard mode, press 'Read episode names' or uncheck the checkbox to stop monitoring and confirm the data.
+You can check 'Use folder name for series title' if the original filenames do not contain an appropriately formatted series name, to use the name of the folder containing the episodes as series title.";
 
 			MessageBox.Show(help, "Help", MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
@@ -400,7 +397,8 @@ Secondly, press the 'Read original filenames' and 'Read episode names' buttons t
 			string help = @"When the filenames and episode names are read, you can edit each file manually to change the new name, add one, or prevent the file from being renamed.
 Files being renamed are marked green, files that already have an episode name are marked yellow, files that do not contain season or episode information are marked red and files without a new episode name are marked grey.
 
-You can also select prefixes for the season and episode numbers as well as separators by pressing 'Set prefixes...'.";
+You can also select prefixes for the season and episode numbers as well as separators by pressing 'Set prefixes...'.
+Note that the selected prefixes do affect the episode matching, so setting the right prefixes before reading files is strongly recommended.";
 
 			MessageBox.Show(help, "Help", MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
@@ -507,7 +505,7 @@ You can also select prefixes for the season and episode numbers as well as separ
 				UpdateGridView();
 			}
 			else
-				MessageBox.Show("The specified folder doesn't exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show("The specified folder does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 
 		private void btnReadNames_Click(object sender, EventArgs e)
@@ -604,6 +602,20 @@ You can also select prefixes for the season and episode numbers as well as separ
 
 
 		#region clipboard
+
+		/// <summary>
+		/// Checks, if the nextClipboardViewer field differs from IntPtr.Zero, and if it does, 
+		/// calls ChangeClipboardChain to unlink this window from the clipboard watching chain.
+		/// </summary>
+		void UnlinkClipboard()
+		{
+			if(nextClipboardViewerSet)
+			{
+				ChangeClipboardChain(this.Handle, nextClipboardViewer);
+				nextClipboardViewer = IntPtr.Zero;
+				nextClipboardViewerSet = false;
+			}
+		}
 
 		private void btnPasteNames_Click(object sender, EventArgs e)
 		{
