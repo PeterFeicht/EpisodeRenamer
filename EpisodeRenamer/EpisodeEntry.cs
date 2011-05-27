@@ -39,6 +39,7 @@ namespace EpisodeRenamer
 
 		string oldFilename = "";
 		string newFilename = "";
+		string origSeries = "";
 		EntryType typeCache;
 		bool typeCacheDirty = true;
 
@@ -120,6 +121,7 @@ namespace EpisodeRenamer
 				if(parts.Length >= 2)
 				{
 					Series = parts[0];
+					origSeries = Series;
 
 					if(parts.Length > 2)
 						for(int j = 2; j < parts.Length; j++)
@@ -199,9 +201,9 @@ namespace EpisodeRenamer
 
 		/// <summary>
 		/// Gets the episode number extracted from the old filename.
+		/// <para>The X and Y coordinates of the Point correspond to the Season and Episode numbers respectively.
+		/// In case the episode number cannot be extracted from the old filename, the coordinates are set to <c>-1</c>.</para>
 		/// </summary>
-		/// <remarks>The X and Y coordinates of the Point correspond to the Season and Episode numbers respectively.
-		/// In case the episode number cannot be extracted from the old filename, the coordinates are set to <c>-1</c>.</remarks>
 		public Point EpisodeNumber
 		{
 			get;
@@ -209,13 +211,14 @@ namespace EpisodeRenamer
 		}
 
 		/// <summary>
-		/// Gets the name of the series the file belongs to, extracted from the old filename.
+		/// Gets or sets the name of the series the file belongs to. The initial value is extracted from the old filename.
 		/// </summary>
-		/// <remarks>In case the name cannot be extracted the value is set to <c>null</c>.</remarks>
+		/// <remarks>In case the name cannot be extracted, the value is set to <c>null</c>.</remarks>
+		/// <see cref="ResetSeries"/>
 		public string Series
 		{
 			get;
-			private set;
+			set;
 		}
 
 		#endregion properties
@@ -347,6 +350,14 @@ namespace EpisodeRenamer
 				parts = RemoveEmptyStrings(Regex.Split(name, " (s[0-9].*)", DefaultRegexOptions));
 
 			return parts;
+		}
+
+		/// <summary>
+		/// Resets the series name to the value read from the original filename.
+		/// </summary>
+		public void ResetSeries()
+		{
+			Series = origSeries;
 		}
 
 		#endregion methods
