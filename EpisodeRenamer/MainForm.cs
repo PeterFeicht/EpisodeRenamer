@@ -54,7 +54,9 @@ namespace EpisodeRenamer
 		/// </summary>
 		public readonly string[ ] FilenameBlacklist = new string[ ] {
 			@"desktop\.ini$",
-			@"thumbs\.db$" };
+			@"thumbs\.db$",
+			@".*\.txt$",
+			@".*\.nfo$" };
 
 		public MainForm()
 		{
@@ -63,13 +65,35 @@ namespace EpisodeRenamer
 			try
 			{
 				// Try to get the executable icon for use as window icon
-				Icon i = Icon.ExtractAssociatedIcon(Process.GetCurrentProcess().MainModule.FileName);
+				Icon i = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
 				this.Icon = i;
 			}
 			catch
 			{
-				this.Text += " - unable to extract Icon";
+				this.Text += " - unable to extract icon";
 			}
+
+			try
+			{
+				// Create logfile
+				string filename = string.Format("EpisodeRenamer-{0:yyyy-MM-dd.HH-mm-ss}.log", DateTime.UtcNow);
+
+				Trace.AutoFlush = true;
+				Trace.Listeners.Add(new TextWriterTraceListener(filename));
+				Trace.WriteLine("EpisodeRenamer Logfile");
+				Trace.WriteLine(filename);
+				Trace.WriteLine(Application.ExecutablePath);
+				Trace.WriteLine("");
+			}
+			catch
+			{
+				this.Text += " - unable to create logfile";
+			}
+		}
+
+		private void MainForm_Load(object sender, EventArgs e)
+		{
+			SetReplaceGroup(false);
 		}
 
 		bool NamesFromClipboard
@@ -133,6 +157,7 @@ namespace EpisodeRenamer
 
 		bool ReadFiles(string path)
 		{
+			Trace.WriteLine("ReadFiles called: " + path);
 			string[ ] files;
 
 			try
@@ -144,6 +169,8 @@ namespace EpisodeRenamer
 			{
 				return false;
 			}
+			Trace.Indent();
+			Trace.WriteLine("Directory Listing successful, number of files: " + files.Length);
 
 			foreach(string item in files)
 			{
@@ -151,11 +178,21 @@ namespace EpisodeRenamer
 				{
 					if(Array.Exists<string>( FilenameBlacklist, (string pat) => Regex.IsMatch(item, pat, RegexOptions.IgnoreCase | RegexOptions.Singleline) ))
 						continue;
-					
-					episodes.Add(new EpisodeEntry(item));
+
+					Trace.WriteLine(item);
+					Trace.Indent();
+
+					EpisodeEntry ep = new EpisodeEntry(item);
+					Trace.WriteLine("Series: " + ep.Series);
+					Trace.WriteLine("EpisodeNumber: " + ep.EpisodeNumber);
+
+					Trace.Unindent();
+					episodes.Add(ep);
 				}
 			}
 
+			Trace.WriteLine("ReadFiles finished.");
+			Trace.Unindent();
 			btnReadNames.Enabled = true;
 			return true;
 		}
@@ -253,7 +290,6 @@ namespace EpisodeRenamer
 			return (count > 0);
 		}
 
-
 		void ExtractEpisodeInformation(string line, out int season, out int episode, out string name)
 		{
 			season = -1;
@@ -303,7 +339,6 @@ namespace EpisodeRenamer
 				} // No episode information found, so use the whole line as name and guess the numbers
 				else
 					name = line;
-
 			}
 		}
 
@@ -314,6 +349,19 @@ namespace EpisodeRenamer
 		{
 			episodes.ResetBindings(false);
 			dataGridView.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+		}
+
+		private void SetReplaceGroup(bool visible)
+		{
+			Trace.WriteLine("SetReplaceGroup called: " + visible);
+			Trace.WriteLine("grpReplace.Visible: " + grpReplace.Visible);
+
+			if(grpReplace.Visible != visible)
+			{
+				grpReplace.Visible = visible;
+				dataGridView.Top += (visible ? grpReplace.Height : -grpReplace.Height);
+				dataGridView.Height += (visible ? -grpReplace.Height : grpReplace.Height);
+			}
 		}
 
 		#endregion methods
@@ -493,7 +541,18 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 			}
 		}
 
+		private void chkUseFolderName_CheckedChanged(object sender, EventArgs e)
+		{
+			if(btnReadNames.Enabled)
+				btnReadNames.PerformClick();
+		}
+
 		// OUTPUT
+		private void chkPostReplace_CheckedChanged(object sender, EventArgs e)
+		{
+			SetReplaceGroup(chkPostReplace.Checked);
+		}
+
 		private void btnReadFiles_Click(object sender, EventArgs e)
 		{
 			InvalidateFilenames();
