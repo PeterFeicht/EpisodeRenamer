@@ -64,17 +64,6 @@ namespace EpisodeRenamer
 
 			try
 			{
-				// Try to get the executable icon for use as window icon
-				Icon i = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
-				this.Icon = i;
-			}
-			catch
-			{
-				this.Text += " - unable to extract icon";
-			}
-
-			try
-			{
 				// Create logfile
 				string filename = string.Format("EpisodeRenamer-{0:yyyy-MM-dd.HH-mm-ss}.log", DateTime.UtcNow);
 
@@ -88,6 +77,19 @@ namespace EpisodeRenamer
 			catch
 			{
 				this.Text += " - unable to create logfile";
+			}
+
+			try
+			{
+				// Try to get the executable icon for use as window icon
+				Icon i = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+				this.Icon = i;
+			}
+			catch(Exception ex)
+			{
+				Trace.WriteLine("Exception in MainForm constructor: ExtractAssociatedIcon.");
+				Trace.WriteLine(ex.Message);
+				Trace.WriteLine(ex.StackTrace);
 			}
 		}
 
@@ -165,8 +167,12 @@ namespace EpisodeRenamer
 				files = Directory.GetFiles(path);
 				folderName = Path.GetFileName(Path.GetFullPath(path));
 			}
-			catch
+			catch(Exception ex)
 			{
+				Trace.WriteLine("Exception (" + ex.GetType() + ") in ReadFiles: list directory.");
+				Trace.WriteLine(ex.Message);
+				Trace.WriteLine(ex.StackTrace);
+
 				return false;
 			}
 			Trace.Indent();
@@ -221,6 +227,23 @@ namespace EpisodeRenamer
 
 			if((lines == null) || (lines.Length < 1))
 				return false;
+
+			Regex post = null;
+
+			if(chkPostReplace.Checked)
+			{
+				try
+				{
+					post = new Regex(txtSearch.Text, chkIgnoreCase.Checked ? RegexOptions.IgnoreCase : RegexOptions.None);
+				}
+				catch(ArgumentException ex)
+				{
+					Trace.WriteLine("ArgumentException in ReadNames: Regex constructor");
+					Trace.WriteLine(ex.Message);
+
+					post = null;
+				}
+			}
 
 			foreach(string line in lines)
 			{
@@ -282,6 +305,21 @@ namespace EpisodeRenamer
 
 				e.NewNameString = line.Trim();
 				e.NewFilename = EpisodeEntry.FormatFilename(e.Series, p, name, Path.GetExtension(e.OldFilename));
+
+				try
+				{
+					if(post != null)
+						e.NewFilename = post.Replace(e.NewFilename, txtReplace.Text);
+				}
+				catch(Exception ex)
+				{
+					Trace.WriteLine("Exception (" + ex.GetType() + ") in ReadNames: regex replace.");
+					Trace.WriteLine(ex.Message);
+					Trace.WriteLine(ex.StackTrace);
+
+					post = null;
+				}
+
 				e.Enabled = (e.GetEntryType() != EpisodeEntry.EntryType.Yellow);
 				count++;
 			}
@@ -308,8 +346,11 @@ namespace EpisodeRenamer
 						season = int.Parse(mSeason.Value);
 						episode = int.Parse(mEpisode.Value);
 					}
-					catch
+					catch(FormatException ex)
 					{
+						Trace.WriteLine("FormatException in ExtractEpisodeInformation: IMDb syntax season and episode match.");
+						Trace.WriteLine(ex.Message);
+
 						season = -1;
 						episode = -1;
 					}
@@ -364,6 +405,20 @@ namespace EpisodeRenamer
 			}
 		}
 
+		private bool CheckRegex(string regex)
+		{
+			try
+			{
+				Regex r = new Regex(regex);
+			}
+			catch
+			{
+				return false;
+			}
+
+			return true;
+		}
+
 		#endregion methods
 
 
@@ -373,6 +428,11 @@ namespace EpisodeRenamer
 		{
 			UnlinkClipboard();
 			dataGridView.DataSource = null;
+		}
+
+		private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			Process.Start(@"http://msdn.microsoft.com/en-us/library/az24scfc.aspx");
 		}
 
 		// Paint DataGridView row background
@@ -547,12 +607,25 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 				btnReadNames.PerformClick();
 		}
 
-		// OUTPUT
 		private void chkPostReplace_CheckedChanged(object sender, EventArgs e)
 		{
 			SetReplaceGroup(chkPostReplace.Checked);
 		}
 
+		private void txtRegex_TextChanged(object sender, EventArgs e)
+		{
+			TextBox t = sender as TextBox;
+
+			if(t != null)
+			{
+				if(CheckRegex(t.Text))
+					t.ForeColor = Color.Black;
+				else
+					t.ForeColor = Color.Red;
+			}
+		}
+
+		// OUTPUT
 		private void btnReadFiles_Click(object sender, EventArgs e)
 		{
 			InvalidateFilenames();
@@ -682,8 +755,12 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 			{
 				frmCheckClipboard.Data = Clipboard.ContainsText() ? Clipboard.GetText() : "";
 			}
-			catch
+			catch(Exception ex)
 			{
+				Trace.WriteLine("Exception (" + ex.GetType() + ") in btnPasteNames_Click: get data from clipboard.");
+				Trace.WriteLine(ex.Message);
+				Trace.WriteLine(ex.StackTrace);
+
 				frmCheckClipboard.Data = "Error retrieving data from clipboard.";
 			}
 
