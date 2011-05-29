@@ -3,6 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 namespace EpisodeRenamer
 {
@@ -191,7 +192,7 @@ namespace EpisodeRenamer
 		}
 
 		/// <summary>
-		/// Gets or sets the line of episode names corresponding to this rename action
+		/// Gets or sets the line of episode names corresponding to this rename action.
 		/// </summary>
 		public string NewNameString
 		{
@@ -348,6 +349,24 @@ namespace EpisodeRenamer
 				parts = RemoveEmptyStrings(Regex.Split(name, @"\.(s[0-9].*)", DefaultRegexOptions));
 			if(parts.Length == 1)
 				parts = RemoveEmptyStrings(Regex.Split(name, " (s[0-9].*)", DefaultRegexOptions));
+			if(parts.Length == 1)
+				parts = RemoveEmptyStrings(Regex.Split(name, "-(s[0-9].*)", DefaultRegexOptions));
+
+			if(parts.Length == 1)
+			{
+				Match m = Regex.Match(parts[0], RegexEpisodeNumberMatchString, DefaultRegexOptions);
+
+				if(m.Success)
+				{
+					string part = parts[0];
+					string[ ] a = new string[3];
+					a[0] = part.Substring(0, m.Index);
+					a[1] = m.Value;
+					a[2] = (m.Index + m.Length < part.Length) ? part.Substring(m.Index + m.Length) : "";
+
+					return a;
+				}
+			}
 
 			return parts;
 		}
@@ -370,12 +389,12 @@ namespace EpisodeRenamer
 		/// <summary>
 		/// A regular expression match string used to match episode information in filenames.
 		/// </summary>
-		public static readonly string RegexEpisodeNumberMatchString = @"(?<![0-9])[0-9]{1,3}[^0-9]+[0-9]{0,3}(?![0-9])";
+		public const string RegexEpisodeNumberMatchString = @"(?<![0-9])[0-9]{1,3}[^0-9]+[0-9]{0,3}(?![0-9])";
 
 		/// <summary>
 		/// The default options for regular expression matching used internally.
 		/// </summary>
-		public static readonly RegexOptions DefaultRegexOptions = RegexOptions.Singleline | RegexOptions.IgnoreCase;
+		public const RegexOptions DefaultRegexOptions = RegexOptions.Singleline | RegexOptions.IgnoreCase;
 
 		static EpisodeEntry()
 		{
@@ -450,27 +469,15 @@ namespace EpisodeRenamer
 		/// <returns>A new array containing only not empty strings.</returns>
 		public static string[ ] RemoveEmptyStrings(string[ ] arr)
 		{
-			int count = 0;
-
-			foreach(string temp in arr)
-			{
-				if(string.IsNullOrWhiteSpace(temp))
-					count++;
-			}
-
-			string[ ] newArray = new string[arr.Length - count];
-			count = 0;
+			List<string> l = new List<string>();
 
 			foreach(string temp in arr)
 			{
 				if(!string.IsNullOrWhiteSpace(temp))
-				{
-					newArray[count] = temp;
-					count++;
-				}
+					l.Add(temp);
 			}
 
-			return newArray;
+			return l.ToArray();
 		}
 
 		/// <summary>
