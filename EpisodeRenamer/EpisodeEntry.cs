@@ -389,7 +389,7 @@ namespace EpisodeRenamer
 		/// <summary>
 		/// A regular expression match string used to match episode information in filenames.
 		/// </summary>
-		public const string RegexEpisodeNumberMatchString = @"(?<![0-9])[0-9]{1,3}[^0-9]+[0-9]{0,3}(?![0-9])";
+		public const string RegexEpisodeNumberMatchString = @"(?<![0-9])[0-9]+[^0-9]+[0-9]+(?![0-9])";
 
 		/// <summary>
 		/// The default options for regular expression matching used internally.
