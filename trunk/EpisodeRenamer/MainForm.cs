@@ -56,7 +56,10 @@ namespace EpisodeRenamer
 			@"desktop\.ini$",
 			@"thumbs\.db$",
 			@".*\.txt$",
-			@".*\.nfo$" };
+			@".*\.nfo$",
+			@".*\.jpg$",
+			@".*\.png$",
+			@".*\.ico$" };
 
 		public MainForm()
 		{
@@ -335,7 +338,7 @@ namespace EpisodeRenamer
 			name = "";
 
 			// Matches IMDb syntax
-			if(Regex.IsMatch(line, @"Season [0-9]{1,3}, Episode [0-9]{1,3}.*", EpisodeEntry.DefaultRegexOptions))
+			if(Regex.IsMatch(line, @"Season [0-9]+, Episode [0-9]+.*", EpisodeEntry.DefaultRegexOptions))
 			{
 				Match mSeason = Regex.Match(line, @"(?<=Season )[0-9]+", EpisodeEntry.DefaultRegexOptions);
 				Match mEpisode = Regex.Match(line, @"(?<=Episode )[0-9]+", EpisodeEntry.DefaultRegexOptions);
@@ -359,7 +362,32 @@ namespace EpisodeRenamer
 				if(m.Success)
 					name = m.Value;
 
-			} // Matches generic syntax
+			} // Matches TheTVDB syntax
+			else if(Regex.IsMatch(line, @"^[0-9]+ - [0-9]+\t.*", EpisodeEntry.DefaultRegexOptions))
+			{
+				Match mSeason = Regex.Match(line, @"^[0-9]+", EpisodeEntry.DefaultRegexOptions);
+				Match mEpisode = Regex.Match(line, @"(?<= - )[0-9]+", EpisodeEntry.DefaultRegexOptions);
+
+				if(mSeason.Success && mEpisode.Success)
+					try
+					{
+						season = int.Parse(mSeason.Value);
+						episode = int.Parse(mEpisode.Value);
+					}
+					catch(FormatException ex)
+					{
+						Trace.WriteLine("FormatException in ExtractEpisodeInformation: TheTVDB syntax season and episode match.");
+						Trace.WriteLine(ex.Message);
+
+						season = -1;
+						episode = -1;
+					}
+
+				Match m = Regex.Match(line, @"(?<=[0-9]+ - [0-9]+\t)[^\t\n]+");
+				if(m.Success)
+					name = m.Value;
+
+			}// Matches generic syntax
 			else
 			{
 				Match m = Regex.Match(line, EpisodeEntry.RegexEpisodeNumberMatchString, EpisodeEntry.DefaultRegexOptions);
