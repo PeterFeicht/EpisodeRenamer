@@ -55,18 +55,18 @@ namespace EpisodeRenamer
 			this.saveClipboardData = new System.Windows.Forms.SaveFileDialog();
 			this.chkUseFolderName = new System.Windows.Forms.CheckBox();
 			this.grpReplace = new System.Windows.Forms.GroupBox();
-			this.chkPostReplace = new System.Windows.Forms.CheckBox();
-			this.txtSearch = new System.Windows.Forms.TextBox();
-			this.txtReplace = new System.Windows.Forms.TextBox();
-			this.label2 = new System.Windows.Forms.Label();
-			this.label4 = new System.Windows.Forms.Label();
-			this.label5 = new System.Windows.Forms.Label();
+			this.chkIgnoreCase = new System.Windows.Forms.CheckBox();
 			this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+			this.label5 = new System.Windows.Forms.Label();
+			this.label4 = new System.Windows.Forms.Label();
+			this.label2 = new System.Windows.Forms.Label();
+			this.txtReplace = new System.Windows.Forms.TextBox();
+			this.txtSearch = new System.Windows.Forms.TextBox();
+			this.chkPostReplace = new System.Windows.Forms.CheckBox();
 			this.enabledDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
 			this.oldFilenameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.newFilenameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.episodes = new System.Windows.Forms.BindingSource(this.components);
-			this.chkIgnoreCase = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
 			this.grpReplace.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.episodes)).BeginInit();
@@ -232,6 +232,7 @@ namespace EpisodeRenamer
 			this.dataGridView.ShowEditingIcon = false;
 			this.dataGridView.Size = new System.Drawing.Size(860, 263);
 			this.dataGridView.TabIndex = 9;
+			this.dataGridView.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dataGridView_RowPostPaint);
 			this.dataGridView.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGridView_RowPrePaint);
 			// 
 			// newNameStringDataGridViewTextBoxColumn
@@ -334,58 +335,17 @@ namespace EpisodeRenamer
 			this.grpReplace.TabStop = false;
 			this.grpReplace.Text = "Post rename replace";
 			// 
-			// chkPostReplace
+			// chkIgnoreCase
 			// 
-			this.chkPostReplace.AutoSize = true;
-			this.chkPostReplace.Location = new System.Drawing.Point(331, 124);
-			this.chkPostReplace.Name = "chkPostReplace";
-			this.chkPostReplace.Size = new System.Drawing.Size(158, 17);
-			this.chkPostReplace.TabIndex = 9;
-			this.chkPostReplace.Text = "Enable post rename replace";
-			this.chkPostReplace.UseVisualStyleBackColor = true;
-			this.chkPostReplace.CheckedChanged += new System.EventHandler(this.chkPostReplace_CheckedChanged);
-			// 
-			// txtSearch
-			// 
-			this.txtSearch.Location = new System.Drawing.Point(6, 32);
-			this.txtSearch.Name = "txtSearch";
-			this.txtSearch.Size = new System.Drawing.Size(365, 20);
-			this.txtSearch.TabIndex = 0;
-			this.txtSearch.TextChanged += new System.EventHandler(this.txtRegex_TextChanged);
-			// 
-			// txtReplace
-			// 
-			this.txtReplace.Location = new System.Drawing.Point(6, 71);
-			this.txtReplace.Name = "txtReplace";
-			this.txtReplace.Size = new System.Drawing.Size(453, 20);
-			this.txtReplace.TabIndex = 1;
-			this.txtReplace.TextChanged += new System.EventHandler(this.txtRegex_TextChanged);
-			// 
-			// label2
-			// 
-			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(6, 16);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(59, 13);
-			this.label2.TabIndex = 2;
-			this.label2.Text = "Search for:";
-			// 
-			// label4
-			// 
-			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(6, 55);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(64, 13);
-			this.label4.TabIndex = 3;
-			this.label4.Text = "Replace by:";
-			// 
-			// label5
-			// 
-			this.label5.Location = new System.Drawing.Point(465, 16);
-			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(298, 78);
-			this.label5.TabIndex = 4;
-			this.label5.Text = resources.GetString("label5.Text");
+			this.chkIgnoreCase.AutoSize = true;
+			this.chkIgnoreCase.Checked = true;
+			this.chkIgnoreCase.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.chkIgnoreCase.Location = new System.Drawing.Point(377, 34);
+			this.chkIgnoreCase.Name = "chkIgnoreCase";
+			this.chkIgnoreCase.Size = new System.Drawing.Size(82, 17);
+			this.chkIgnoreCase.TabIndex = 5;
+			this.chkIgnoreCase.Text = "Ignore case";
+			this.chkIgnoreCase.UseVisualStyleBackColor = true;
 			// 
 			// linkLabel1
 			// 
@@ -399,6 +359,59 @@ namespace EpisodeRenamer
 			this.linkLabel1.Text = "See here for information on regular expressions.";
 			this.linkLabel1.UseCompatibleTextRendering = true;
 			this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
+			// 
+			// label5
+			// 
+			this.label5.Location = new System.Drawing.Point(465, 16);
+			this.label5.Name = "label5";
+			this.label5.Size = new System.Drawing.Size(298, 78);
+			this.label5.TabIndex = 4;
+			this.label5.Text = resources.GetString("label5.Text");
+			// 
+			// label4
+			// 
+			this.label4.AutoSize = true;
+			this.label4.Location = new System.Drawing.Point(6, 55);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(64, 13);
+			this.label4.TabIndex = 3;
+			this.label4.Text = "Replace by:";
+			// 
+			// label2
+			// 
+			this.label2.AutoSize = true;
+			this.label2.Location = new System.Drawing.Point(6, 16);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(59, 13);
+			this.label2.TabIndex = 2;
+			this.label2.Text = "Search for:";
+			// 
+			// txtReplace
+			// 
+			this.txtReplace.Location = new System.Drawing.Point(6, 71);
+			this.txtReplace.Name = "txtReplace";
+			this.txtReplace.Size = new System.Drawing.Size(453, 20);
+			this.txtReplace.TabIndex = 1;
+			this.txtReplace.TextChanged += new System.EventHandler(this.txtRegex_TextChanged);
+			// 
+			// txtSearch
+			// 
+			this.txtSearch.Location = new System.Drawing.Point(6, 32);
+			this.txtSearch.Name = "txtSearch";
+			this.txtSearch.Size = new System.Drawing.Size(365, 20);
+			this.txtSearch.TabIndex = 0;
+			this.txtSearch.TextChanged += new System.EventHandler(this.txtRegex_TextChanged);
+			// 
+			// chkPostReplace
+			// 
+			this.chkPostReplace.AutoSize = true;
+			this.chkPostReplace.Location = new System.Drawing.Point(331, 124);
+			this.chkPostReplace.Name = "chkPostReplace";
+			this.chkPostReplace.Size = new System.Drawing.Size(158, 17);
+			this.chkPostReplace.TabIndex = 9;
+			this.chkPostReplace.Text = "Enable post rename replace";
+			this.chkPostReplace.UseVisualStyleBackColor = true;
+			this.chkPostReplace.CheckedChanged += new System.EventHandler(this.chkPostReplace_CheckedChanged);
 			// 
 			// enabledDataGridViewCheckBoxColumn
 			// 
@@ -435,18 +448,6 @@ namespace EpisodeRenamer
 			// episodes
 			// 
 			this.episodes.DataSource = typeof(EpisodeRenamer.EpisodeEntry);
-			// 
-			// chkIgnoreCase
-			// 
-			this.chkIgnoreCase.AutoSize = true;
-			this.chkIgnoreCase.Checked = true;
-			this.chkIgnoreCase.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.chkIgnoreCase.Location = new System.Drawing.Point(377, 34);
-			this.chkIgnoreCase.Name = "chkIgnoreCase";
-			this.chkIgnoreCase.Size = new System.Drawing.Size(82, 17);
-			this.chkIgnoreCase.TabIndex = 5;
-			this.chkIgnoreCase.Text = "Ignore case";
-			this.chkIgnoreCase.UseVisualStyleBackColor = true;
 			// 
 			// MainForm
 			// 
