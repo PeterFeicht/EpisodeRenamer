@@ -501,6 +501,9 @@ namespace EpisodeRenamer
 					case EpisodeEntry.EntryType.Gray:
 						color = Color.LightGray;
 						break;
+					case EpisodeEntry.EntryType.Blue:
+						color = Color.LightBlue;
+						break;
 					default:
 						color = Color.Cyan;
 						break;
