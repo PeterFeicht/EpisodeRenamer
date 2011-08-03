@@ -508,11 +508,31 @@ namespace EpisodeRenamer
 						color = Color.Cyan;
 						break;
 				}
-				if(!entry.Enabled)
-					br = new HatchBrush(HatchStyle.Percent05, Color.Gray, color);
-				else
-					br = new SolidBrush(color);
 
+				e.Graphics.FillRectangle(new SolidBrush(color), rowBounds);
+			}
+		}
+
+		private void dataGridView_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+		{
+			EpisodeEntry entry = episodes[e.RowIndex] as EpisodeEntry;
+			if(entry == null)
+				return;
+
+			// Determine whether the cell should be painted
+			// with the custom foreground.
+			if((entry.GetEntryType() != EpisodeEntry.EntryType.None) && entry.Enabled)
+			{
+				// Calculate the bounds of the row.
+				Rectangle rowBounds = new Rectangle(
+					0,
+					e.RowBounds.Top,
+					dataGridView.Columns.GetColumnsWidth(DataGridViewElementStates.Visible) - dataGridView.HorizontalScrollingOffset + 1,
+					e.RowBounds.Height);
+
+				Color c1 = Color.FromArgb(160, Color.Gray);
+				Color c2 = Color.FromArgb(200, Color.Gray);
+				Brush br = new HatchBrush(HatchStyle.Weave, c2, c1);
 				e.Graphics.FillRectangle(br, rowBounds);
 			}
 		}
