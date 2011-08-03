@@ -78,6 +78,8 @@
     <Compile Include="CheckClipboardDataForm.Designer.cs">
       <DependentUpon>CheckClipboardDataForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="DatagridViewCheckBoxHeaderCell.cs" />
+    <Compile Include="DataGridViewCheckBoxHeaderCellEventArgs.cs" />
     <Compile Include="EpisodeEntry.cs" />
     <Compile Include="IWebsiteFilter.cs" />
     <Compile Include="MainForm.cs">
