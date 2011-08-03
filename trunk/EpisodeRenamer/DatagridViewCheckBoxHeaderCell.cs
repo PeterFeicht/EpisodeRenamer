@@ -8,7 +8,7 @@ using System.Windows.Forms.VisualStyles;
 
 namespace EpisodeRenamer
 {
-	public delegate void CheckBoxClickedHandler(bool state);
+	public delegate void CheckBoxClickedEventHandler(object sender, DataGridViewCheckBoxHeaderCellEventArgs e);
 
 	/// <summary>
 	/// Source: http://techisolutions.blogspot.com/2008/02/datagridview-checkbox-select-all.html
@@ -21,7 +21,7 @@ namespace EpisodeRenamer
 		Point _cellLocation = new Point();
 		CheckBoxState _cbState = CheckBoxState.UncheckedNormal;
 
-		public event CheckBoxClickedHandler OnCheckBoxClicked;
+		public event CheckBoxClickedEventHandler OnCheckBoxClicked;
 
 		public DatagridViewCheckBoxHeaderCell()
 		{
@@ -67,9 +67,11 @@ namespace EpisodeRenamer
 				(p.Y >= checkBoxLocation.Y) && (p.Y <= checkBoxLocation.Y + checkBoxSize.Height))
 			{
 				_checked = !_checked;
+				DataGridViewCheckBoxHeaderCellEventArgs ev = new DataGridViewCheckBoxHeaderCellEventArgs(_checked);
+
 				if(OnCheckBoxClicked != null)
 				{
-					OnCheckBoxClicked(_checked);
+					OnCheckBoxClicked(this, ev);
 					this.DataGridView.InvalidateCell(this);
 				}
 			}

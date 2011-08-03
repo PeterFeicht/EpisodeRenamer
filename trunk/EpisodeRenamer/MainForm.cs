@@ -31,8 +31,10 @@ namespace EpisodeRenamer
 
 		#region fields, ctor, properties
 
-		ChangePrefixForm frmChangePrefix = new ChangePrefixForm();
-		CheckClipboardDataForm frmCheckClipboard = new CheckClipboardDataForm();
+		ChangePrefixForm frmChangePrefix;
+		CheckClipboardDataForm frmCheckClipboard;
+
+		DatagridViewCheckBoxHeaderCell chkHeader;
 
 		/// <summary>
 		/// Use property!
@@ -94,6 +96,15 @@ namespace EpisodeRenamer
 				Trace.WriteLine(ex.Message);
 				Trace.WriteLine(ex.StackTrace);
 			}
+
+			frmChangePrefix = new ChangePrefixForm();
+			frmCheckClipboard = new CheckClipboardDataForm();
+			chkHeader = new DatagridViewCheckBoxHeaderCell();
+
+			chkHeader.OnCheckBoxClicked += new CheckBoxClickedEventHandler(chkHeader_OnCheckBoxClicked);
+			chkHeader.Value = "";
+
+			dataGridView.Columns[0].HeaderCell = chkHeader;
 		}
 
 		private void MainForm_Load(object sender, EventArgs e)
@@ -463,7 +474,7 @@ namespace EpisodeRenamer
 			Process.Start(@"http://msdn.microsoft.com/en-us/library/az24scfc.aspx");
 		}
 
-		// Paint DataGridView row background
+		// dataGridView
 		private void dataGridView_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
 		{
 			EpisodeEntry entry = episodes[e.RowIndex] as EpisodeEntry;
@@ -521,7 +532,7 @@ namespace EpisodeRenamer
 
 			// Determine whether the cell should be painted
 			// with the custom foreground.
-			if((entry.GetEntryType() != EpisodeEntry.EntryType.None) && entry.Enabled)
+			if((entry.GetEntryType() != EpisodeEntry.EntryType.None) && !entry.Enabled)
 			{
 				// Calculate the bounds of the row.
 				Rectangle rowBounds = new Rectangle(
@@ -535,6 +546,23 @@ namespace EpisodeRenamer
 				Brush br = new HatchBrush(HatchStyle.Weave, c2, c1);
 				e.Graphics.FillRectangle(br, rowBounds);
 			}
+		}
+
+		private void chkHeader_OnCheckBoxClicked(object sender, DataGridViewCheckBoxHeaderCellEventArgs e)
+		{
+			foreach(EpisodeEntry entry in episodes)
+			{
+				entry.Enabled = e.Checked;
+			}
+
+			dataGridView.EndEdit();
+			dataGridView.Refresh();
+		}
+
+		private void dataGridView_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+		{
+			if(dataGridView.CurrentCellAddress.X == 0)
+				dataGridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
 		}
 
 		// HELP
