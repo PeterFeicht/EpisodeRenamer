@@ -35,7 +35,11 @@ namespace EpisodeRenamer
 			/// <summary>
 			/// No new episode name is set.
 			/// </summary>
-			Gray
+			Gray,
+			/// <summary>
+			/// The old and the new filename are the same.
+			/// </summary>
+			Blue
 		}
 
 		string oldFilename = "";
@@ -165,7 +169,7 @@ namespace EpisodeRenamer
 		}
 
 		/// <summary>
-		/// Gets or sets whether the rename action will be performed if <see cref="PerformRename"/> is called.
+		/// Gets or sets whether the rename action will be performed when <see cref="PerformRename"/> is called.
 		/// </summary>
 		public bool Enabled
 		{
@@ -235,6 +239,8 @@ namespace EpisodeRenamer
 		{
 			if(!Enabled || Moved)
 				return true;
+			if(oldFilename == newFilename)
+				return true;
 
 			Enabled = false;
 
@@ -270,6 +276,10 @@ namespace EpisodeRenamer
 						typeCache = EntryType.None;
 					else
 						typeCache = EntryType.Gray;
+				}
+				else if(newFilename == oldFilename)
+				{
+					typeCache = EntryType.Blue;
 				}
 				else
 				{
