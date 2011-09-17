@@ -268,6 +268,9 @@ namespace EpisodeRenamer
 				if(string.IsNullOrWhiteSpace(line))
 					continue;
 
+				if(count >= episodes.Count)
+					break;
+
 				// Extract season number, episode number and episode name from line
 				ExtractEpisodeInformation(line, out season, out episode, out name);
 
