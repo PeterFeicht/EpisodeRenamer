@@ -50,6 +50,7 @@ namespace EpisodeRenamer
 		string clipboardData = "";
 		StringBuilder sbClipboardData = new StringBuilder();
 		string folderName = "";
+		bool log;
 
 		/// <summary>
 		/// A list of regular expressions for filenames that should not be added to the episode list when parsing.
@@ -63,19 +64,28 @@ namespace EpisodeRenamer
 			@".*\.png$",
 			@".*\.ico$" };
 
-		public MainForm()
+		public MainForm() : this(false)
+		{
+			
+		}
+
+		public MainForm(bool log)
 		{
 			InitializeComponent();
+			this.log = log;
 
 			try
 			{
-				// Create logfile
-				string filename = string.Format("EpisodeRenamer-{0:yyyy-MM-dd.HH-mm-ss}.log", DateTime.UtcNow);
+				if(log)
+				{
+					// Create logfile
+					string filename = string.Format("EpisodeRenamer_{0:yyyy-MM-dd_HH.mm}.log", DateTime.UtcNow);
 
-				Trace.AutoFlush = true;
-				Trace.Listeners.Add(new TextWriterTraceListener(filename));
+					Trace.AutoFlush = true;
+					Trace.Listeners.Add(new TextWriterTraceListener(filename));
+					Trace.WriteLine(filename);
+				}
 				Trace.WriteLine("EpisodeRenamer Logfile");
-				Trace.WriteLine(filename);
 				Trace.WriteLine(Application.ExecutablePath);
 				Trace.WriteLine("");
 			}
@@ -110,6 +120,9 @@ namespace EpisodeRenamer
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 			SetReplaceGroup(false);
+
+			if(Directory.Exists("H:\\"))
+				openFolder.SelectedPath = "H:\\";
 		}
 
 		bool NamesFromClipboard

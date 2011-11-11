@@ -74,8 +74,8 @@ namespace EpisodeRenamer
 			// 
 			// txtNameFile
 			// 
-			this.txtNameFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.txtNameFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtNameFile.Location = new System.Drawing.Point(12, 64);
 			this.txtNameFile.Name = "txtNameFile";
 			this.txtNameFile.Size = new System.Drawing.Size(779, 20);
@@ -85,8 +85,8 @@ namespace EpisodeRenamer
 			// 
 			// txtEpisodeFolder
 			// 
-			this.txtEpisodeFolder.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.txtEpisodeFolder.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtEpisodeFolder.Location = new System.Drawing.Point(12, 25);
 			this.txtEpisodeFolder.Name = "txtEpisodeFolder";
 			this.txtEpisodeFolder.Size = new System.Drawing.Size(779, 20);
@@ -213,12 +213,12 @@ namespace EpisodeRenamer
 			// 
 			this.dataGridView.AllowUserToAddRows = false;
 			this.dataGridView.AllowUserToResizeRows = false;
-			this.dataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.dataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.dataGridView.AutoGenerateColumns = false;
 			this.dataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-			this.dataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[ ] {
+			this.dataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.enabledDataGridViewCheckBoxColumn,
             this.oldFilenameDataGridViewTextBoxColumn,
             this.newFilenameDataGridViewTextBoxColumn,
@@ -309,8 +309,8 @@ namespace EpisodeRenamer
 			// 
 			// grpReplace
 			// 
-			this.grpReplace.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.grpReplace.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.grpReplace.Controls.Add(this.chkIgnoreCase);
 			this.grpReplace.Controls.Add(this.linkLabel1);
 			this.grpReplace.Controls.Add(this.label5);
@@ -352,7 +352,7 @@ namespace EpisodeRenamer
 			// 
 			// label5
 			// 
-			this.label5.Location = new System.Drawing.Point(465, 16);
+			this.label5.Location = new System.Drawing.Point(465, 12);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(298, 78);
 			this.label5.TabIndex = 4;
