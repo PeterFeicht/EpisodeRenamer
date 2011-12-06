@@ -64,6 +64,8 @@ namespace EpisodeRenamer
 			@".*\.png$",
 			@".*\.ico$" };
 
+		public readonly string defaultNameFileName = "Episode Names.txt";
+
 		public MainForm() : this(false)
 		{
 			
@@ -120,6 +122,8 @@ namespace EpisodeRenamer
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 			SetReplaceGroup(false);
+
+			openNameFile.FileName = defaultNameFileName;
 
 			if(Directory.Exists("H:\\"))
 				openFolder.SelectedPath = "H:\\";
@@ -512,7 +516,6 @@ namespace EpisodeRenamer
 
 				// Paint the custom background.
 				Color color;
-				Brush br;
 				switch(entry.GetEntryType())
 				{
 					case EpisodeEntry.EntryType.Green:
@@ -726,10 +729,19 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 			InvalidateFilenames();
 			if(Directory.Exists(txtEpisodeFolder.Text))
 			{
-				if(!ReadFiles(txtEpisodeFolder.Text))
+				if(ReadFiles(txtEpisodeFolder.Text))
+				{
+					string episodeNameFileName = Path.Combine(txtEpisodeFolder.Text, defaultNameFileName);
+					if(File.Exists(episodeNameFileName))
+					{
+						txtNameFile.Text = episodeNameFileName;
+						btnReadNames.PerformClick();
+					}
+					else
+						UpdateGridView();
+				}
+				else
 					MessageBox.Show("Error reading the files.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-				UpdateGridView();
 			}
 			else
 				MessageBox.Show("The specified folder does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -963,6 +975,63 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 				default:
 					base.WndProc(ref m);
 					break;
+			}
+		}
+
+		private void txt_DragDrop(object sender, DragEventArgs e)
+		{
+			TextBox txt = sender as TextBox;
+
+			if(txt == null)
+			{
+				e.Effect = DragDropEffects.None;
+				return;
+			}
+
+			if((e.AllowedEffect & DragDropEffects.Copy) == DragDropEffects.Copy)
+			{
+				e.Effect = DragDropEffects.Copy;
+				if(e.Data.GetDataPresent(typeof(String)))
+				{
+					txt.Text = (string)e.Data.GetData(typeof(String));
+				}
+				else if(e.Data.GetDataPresent(DataFormats.FileDrop))
+				{
+					string[ ] filenames = (string[ ])e.Data.GetData(DataFormats.FileDrop);
+					if(filenames.Length < 1)
+						return;
+					txt.Text = filenames[0];
+				}
+				else
+				{
+					e.Effect = DragDropEffects.None;
+					return;
+				}
+
+				Button btn = null;
+
+				if(txt == txtEpisodeFolder)
+					btn = btnReadFiles;
+				else if(txt == txtNameFile)
+					btn = btnReadNames;
+
+				if(btn != null && btn.Enabled)
+					btn.PerformClick();
+			}
+		}
+
+		private void txt_DragEnter(object sender, DragEventArgs e)
+		{
+			if(e.Data.GetDataPresent(typeof(String)) || e.Data.GetDataPresent(DataFormats.FileDrop))
+			{
+				if((e.AllowedEffect & DragDropEffects.Copy) == DragDropEffects.Copy)
+				{
+					e.Effect = DragDropEffects.Copy;
+				}
+			}
+			else
+			{
+				e.Effect = DragDropEffects.None;
 			}
 		}
 
