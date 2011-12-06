@@ -74,6 +74,7 @@ namespace EpisodeRenamer
 			// 
 			// txtNameFile
 			// 
+			this.txtNameFile.AllowDrop = true;
 			this.txtNameFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtNameFile.Location = new System.Drawing.Point(12, 64);
@@ -81,10 +82,13 @@ namespace EpisodeRenamer
 			this.txtNameFile.Size = new System.Drawing.Size(779, 20);
 			this.txtNameFile.TabIndex = 2;
 			this.txtNameFile.TextChanged += new System.EventHandler(this.txtNameFile_TextChanged);
+			this.txtNameFile.DragDrop += new System.Windows.Forms.DragEventHandler(this.txt_DragDrop);
+			this.txtNameFile.DragEnter += new System.Windows.Forms.DragEventHandler(this.txt_DragEnter);
 			this.txtNameFile.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtNameFile_KeyDown);
 			// 
 			// txtEpisodeFolder
 			// 
+			this.txtEpisodeFolder.AllowDrop = true;
 			this.txtEpisodeFolder.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtEpisodeFolder.Location = new System.Drawing.Point(12, 25);
@@ -92,6 +96,8 @@ namespace EpisodeRenamer
 			this.txtEpisodeFolder.Size = new System.Drawing.Size(779, 20);
 			this.txtEpisodeFolder.TabIndex = 0;
 			this.txtEpisodeFolder.TextChanged += new System.EventHandler(this.txtEpisodeFolder_TextChanged);
+			this.txtEpisodeFolder.DragDrop += new System.Windows.Forms.DragEventHandler(this.txt_DragDrop);
+			this.txtEpisodeFolder.DragEnter += new System.Windows.Forms.DragEventHandler(this.txt_DragEnter);
 			this.txtEpisodeFolder.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtEpisodeFolder_KeyDown);
 			// 
 			// label1
@@ -204,7 +210,6 @@ namespace EpisodeRenamer
 			// openNameFile
 			// 
 			this.openNameFile.AddExtension = false;
-			this.openNameFile.FileName = "Episode Names.txt";
 			this.openNameFile.Filter = "Text Files (*.txt)|*.txt|All Files|*.*";
 			this.openNameFile.SupportMultiDottedExtensions = true;
 			this.openNameFile.Title = "Select episode name file";

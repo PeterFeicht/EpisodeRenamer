@@ -21,6 +21,13 @@ namespace EpisodeRenamer
 			{
 				if(args[0] == "-l" || args[0] == "--log")
 					frmMain = new MainForm(true);
+
+				if(args[0] == "-h" || args[0] == "--help")
+				{
+					Console.WriteLine("usage: EpisodeRenamer [options]\n\noptions are:\n  -l | --log\n    Create a log file and write debugging information.");
+					Console.WriteLine("  -h | --help\n    Display this help message.");
+					return;
+				}
 			}
 
 			if(frmMain == null)
