@@ -447,8 +447,10 @@ namespace EpisodeRenamer
 		/// </summary>
 		void UpdateGridView()
 		{
+			int tmp = dataGridView.FirstDisplayedScrollingRowIndex;
 			episodes.ResetBindings(false);
 			dataGridView.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+			dataGridView.FirstDisplayedScrollingRowIndex = (tmp < episodes.Count ? tmp : episodes.Count - 1);
 		}
 
 		private void SetReplaceGroup(bool visible)
@@ -735,6 +737,8 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 					if(File.Exists(episodeNameFileName))
 					{
 						txtNameFile.Text = episodeNameFileName;
+						MonitoringClipboard = false;
+						NamesFromClipboard = false;
 						btnReadNames.PerformClick();
 					}
 					else
@@ -760,6 +764,9 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 					UpdateGridView();
 				else
 					return;
+				// Set episode file in same folder as episodes in case another one is still selected
+				if(Path.GetDirectoryName(txtEpisodeFolder.Text) != Path.GetDirectoryName(saveClipboardData.FileName))
+					saveClipboardData.FileName = Path.Combine(txtEpisodeFolder.Text, defaultNameFileName);
 			}
 			else
 			{
@@ -771,6 +778,8 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 							UpdateGridView();
 						else
 							throw new Exception("Error reading the file.");
+						// Set save file name to the existing file, most likely the same one will be used if it is overwritten with new data.
+						saveClipboardData.FileName = txtNameFile.Text;
 					}
 					catch(Exception ex)
 					{
@@ -791,9 +800,9 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 
 		private void btnRename_Click(object sender, EventArgs e)
 		{
-			bool error = false;
 			List<Exception> exceptions = new List<Exception>();
 			int renamed = 0;
+			MessageBoxIcon icon;
 
 			foreach(EpisodeEntry item in episodes)
 			{
@@ -803,10 +812,7 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 						renamed++;
 				}
 				else
-				{
-					error = true;
 					exceptions.Add(item.MoveException);
-				}
 			}
 
 			StringBuilder sb = new StringBuilder();
@@ -816,8 +822,9 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 				sb.AppendFormat("{0} files have", renamed);
 			sb.AppendLine(" been renamed.");
 
-			if(error)
+			if(exceptions.Count > 0)
 			{
+				icon = MessageBoxIcon.Warning;
 				sb.AppendLine("One or more errors occurred while renaming the files:");
 
 				foreach(Exception ex in exceptions)
@@ -825,6 +832,7 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 			}
 			else
 			{
+				icon = MessageBoxIcon.Information;
 				if(renamed == 0)
 					sb = new StringBuilder("No files have been renamed.");
 				else
@@ -834,7 +842,7 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 				btnReadFiles.PerformClick();
 			}
 
-			MessageBox.Show(sb.ToString(), "Finished", MessageBoxButtons.OK, error ? MessageBoxIcon.Warning : MessageBoxIcon.Information);
+			MessageBox.Show(sb.ToString(), "Finished", MessageBoxButtons.OK, icon);
 		}
 
 		#endregion events
