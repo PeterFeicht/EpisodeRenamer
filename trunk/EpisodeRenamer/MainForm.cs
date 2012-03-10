@@ -65,6 +65,7 @@ namespace EpisodeRenamer
 			@".*\.ico$" };
 
 		public readonly string defaultNameFileName = "Episode Names.txt";
+		private bool dropped;
 
 		public MainForm() : this(false)
 		{
@@ -137,6 +138,9 @@ namespace EpisodeRenamer
 			}
 			set
 			{
+				if(namesFromClipboard == value)
+					return;
+
 				namesFromClipboard = value;
 				txtNameFile.ReadOnly = value;
 				btnEditClipboardData.Enabled = value;
@@ -154,6 +158,9 @@ namespace EpisodeRenamer
 			}
 			set
 			{
+				if(monitoringClipboard == value)
+					return;
+
 				monitoringClipboard = value;
 				btnPasteNames.Enabled = !value;
 				txtNameFile.ReadOnly = value;
@@ -736,11 +743,18 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 					string episodeNameFileName = Path.Combine(txtEpisodeFolder.Text, defaultNameFileName);
 					if(File.Exists(episodeNameFileName))
 					{
-						txtNameFile.Text = episodeNameFileName;
-						MonitoringClipboard = false;
-						NamesFromClipboard = false;
+						if(dropped)
+						{
+							Trace.WriteLine("In btnReadFiles_Click: dropped == true -> disabling clipboard data.");
+							MonitoringClipboard = false;
+							NamesFromClipboard = false;
+							txtNameFile.Text = episodeNameFileName;
+							dropped = false;
+						}
 						btnReadNames.PerformClick();
 					}
+					else if(NamesFromClipboard)
+						btnReadNames.PerformClick();
 					else
 						UpdateGridView();
 				}
@@ -766,7 +780,10 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 					return;
 				// Set episode file in same folder as episodes in case another one is still selected
 				if(Path.GetDirectoryName(txtEpisodeFolder.Text) != Path.GetDirectoryName(saveClipboardData.FileName))
+				{
+					saveClipboardData.InitialDirectory = txtEpisodeFolder.Text;
 					saveClipboardData.FileName = Path.Combine(txtEpisodeFolder.Text, defaultNameFileName);
+				}
 			}
 			else
 			{
@@ -779,6 +796,7 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 						else
 							throw new Exception("Error reading the file.");
 						// Set save file name to the existing file, most likely the same one will be used if it is overwritten with new data.
+						saveClipboardData.InitialDirectory = Path.GetDirectoryName(txtNameFile.Text);
 						saveClipboardData.FileName = txtNameFile.Text;
 					}
 					catch(Exception ex)
@@ -1016,15 +1034,17 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 					return;
 				}
 
-				Button btn = null;
-
 				if(txt == txtEpisodeFolder)
-					btn = btnReadFiles;
+				{
+					dropped = true;
+					if(btnReadFiles.Enabled) btnReadFiles.PerformClick();
+				}
 				else if(txt == txtNameFile)
-					btn = btnReadNames;
-
-				if(btn != null && btn.Enabled)
-					btn.PerformClick();
+				{
+					MonitoringClipboard = false;
+					NamesFromClipboard = false;
+					if(btnReadNames.Enabled) btnReadNames.PerformClick();
+				}
 			}
 		}
 
