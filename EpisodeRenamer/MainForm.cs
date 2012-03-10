@@ -1036,6 +1036,9 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 
 				if(txt == txtEpisodeFolder)
 				{
+					if(File.Exists(txt.Text))
+						txt.Text = Path.GetDirectoryName(txt.Text);
+
 					dropped = true;
 					if(btnReadFiles.Enabled) btnReadFiles.PerformClick();
 				}
