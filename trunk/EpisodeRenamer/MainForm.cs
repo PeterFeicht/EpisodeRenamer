@@ -751,6 +751,8 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 							txtNameFile.Text = episodeNameFileName;
 							dropped = false;
 						}
+						if(!NamesFromClipboard)
+							txtNameFile.Text = episodeNameFileName;
 						btnReadNames.PerformClick();
 					}
 					else if(NamesFromClipboard)
@@ -787,6 +789,9 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 			}
 			else
 			{
+				if(txtNameFile.Text == string.Empty)
+					return;
+
 				if(File.Exists(txtNameFile.Text))
 				{
 					try
@@ -1040,7 +1045,7 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 						txt.Text = Path.GetDirectoryName(txt.Text);
 
 					dropped = true;
-					if(btnReadFiles.Enabled) btnReadFiles.PerformClick();
+					btnReadFiles.PerformClick();
 				}
 				else if(txt == txtNameFile)
 				{
