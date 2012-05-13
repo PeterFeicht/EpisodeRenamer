@@ -46,6 +46,11 @@ namespace EpisodeRenamer
 			this.chkMonitorClipboard = new System.Windows.Forms.CheckBox();
 			this.openNameFile = new System.Windows.Forms.OpenFileDialog();
 			this.dataGridView = new System.Windows.Forms.DataGridView();
+			this.enabledDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+			this.oldFilenameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.newFilenameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.newNameStringDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.episodes = new System.Windows.Forms.BindingSource(this.components);
 			this.btnRename = new System.Windows.Forms.Button();
 			this.btnSetPrefix = new System.Windows.Forms.Button();
 			this.openFolder = new System.Windows.Forms.FolderBrowserDialog();
@@ -62,14 +67,9 @@ namespace EpisodeRenamer
 			this.txtReplace = new System.Windows.Forms.TextBox();
 			this.txtSearch = new System.Windows.Forms.TextBox();
 			this.chkPostReplace = new System.Windows.Forms.CheckBox();
-			this.enabledDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-			this.oldFilenameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.newFilenameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.newNameStringDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.episodes = new System.Windows.Forms.BindingSource(this.components);
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
-			this.grpReplace.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.episodes)).BeginInit();
+			this.grpReplace.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// txtNameFile
@@ -241,6 +241,54 @@ namespace EpisodeRenamer
 			this.dataGridView.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dataGridView_RowPostPaint);
 			this.dataGridView.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGridView_RowPrePaint);
 			// 
+			// enabledDataGridViewCheckBoxColumn
+			// 
+			this.enabledDataGridViewCheckBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+			this.enabledDataGridViewCheckBoxColumn.DataPropertyName = "Enabled";
+			this.enabledDataGridViewCheckBoxColumn.FalseValue = "false";
+			this.enabledDataGridViewCheckBoxColumn.Frozen = true;
+			this.enabledDataGridViewCheckBoxColumn.HeaderText = "Enabled";
+			this.enabledDataGridViewCheckBoxColumn.MinimumWidth = 60;
+			this.enabledDataGridViewCheckBoxColumn.Name = "enabledDataGridViewCheckBoxColumn";
+			this.enabledDataGridViewCheckBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+			this.enabledDataGridViewCheckBoxColumn.TrueValue = "true";
+			this.enabledDataGridViewCheckBoxColumn.Width = 60;
+			// 
+			// oldFilenameDataGridViewTextBoxColumn
+			// 
+			this.oldFilenameDataGridViewTextBoxColumn.DataPropertyName = "OldFilename";
+			this.oldFilenameDataGridViewTextBoxColumn.Frozen = true;
+			this.oldFilenameDataGridViewTextBoxColumn.HeaderText = "Original Filename";
+			this.oldFilenameDataGridViewTextBoxColumn.MinimumWidth = 110;
+			this.oldFilenameDataGridViewTextBoxColumn.Name = "oldFilenameDataGridViewTextBoxColumn";
+			this.oldFilenameDataGridViewTextBoxColumn.ReadOnly = true;
+			this.oldFilenameDataGridViewTextBoxColumn.Width = 170;
+			// 
+			// newFilenameDataGridViewTextBoxColumn
+			// 
+			this.newFilenameDataGridViewTextBoxColumn.DataPropertyName = "NewFilename";
+			this.newFilenameDataGridViewTextBoxColumn.Frozen = true;
+			this.newFilenameDataGridViewTextBoxColumn.HeaderText = "New Filename";
+			this.newFilenameDataGridViewTextBoxColumn.MinimumWidth = 100;
+			this.newFilenameDataGridViewTextBoxColumn.Name = "newFilenameDataGridViewTextBoxColumn";
+			this.newFilenameDataGridViewTextBoxColumn.Width = 300;
+			// 
+			// newNameStringDataGridViewTextBoxColumn
+			// 
+			this.newNameStringDataGridViewTextBoxColumn.DataPropertyName = "NewNameString";
+			this.newNameStringDataGridViewTextBoxColumn.Frozen = true;
+			this.newNameStringDataGridViewTextBoxColumn.HeaderText = "Data";
+			this.newNameStringDataGridViewTextBoxColumn.MinimumWidth = 100;
+			this.newNameStringDataGridViewTextBoxColumn.Name = "newNameStringDataGridViewTextBoxColumn";
+			this.newNameStringDataGridViewTextBoxColumn.ReadOnly = true;
+			this.newNameStringDataGridViewTextBoxColumn.ToolTipText = "The line of data from which the episode name was taken.";
+			this.newNameStringDataGridViewTextBoxColumn.Width = 250;
+			// 
+			// episodes
+			// 
+			this.episodes.DataSource = typeof(EpisodeRenamer.EpisodeEntry);
+			this.episodes.Sort = "OldFilename";
+			// 
 			// btnRename
 			// 
 			this.btnRename.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -408,53 +456,6 @@ namespace EpisodeRenamer
 			this.chkPostReplace.UseVisualStyleBackColor = true;
 			this.chkPostReplace.CheckedChanged += new System.EventHandler(this.chkPostReplace_CheckedChanged);
 			// 
-			// enabledDataGridViewCheckBoxColumn
-			// 
-			this.enabledDataGridViewCheckBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-			this.enabledDataGridViewCheckBoxColumn.DataPropertyName = "Enabled";
-			this.enabledDataGridViewCheckBoxColumn.FalseValue = "false";
-			this.enabledDataGridViewCheckBoxColumn.Frozen = true;
-			this.enabledDataGridViewCheckBoxColumn.HeaderText = "Enabled";
-			this.enabledDataGridViewCheckBoxColumn.MinimumWidth = 60;
-			this.enabledDataGridViewCheckBoxColumn.Name = "enabledDataGridViewCheckBoxColumn";
-			this.enabledDataGridViewCheckBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-			this.enabledDataGridViewCheckBoxColumn.TrueValue = "true";
-			this.enabledDataGridViewCheckBoxColumn.Width = 60;
-			// 
-			// oldFilenameDataGridViewTextBoxColumn
-			// 
-			this.oldFilenameDataGridViewTextBoxColumn.DataPropertyName = "OldFilename";
-			this.oldFilenameDataGridViewTextBoxColumn.Frozen = true;
-			this.oldFilenameDataGridViewTextBoxColumn.HeaderText = "Original Filename";
-			this.oldFilenameDataGridViewTextBoxColumn.MinimumWidth = 110;
-			this.oldFilenameDataGridViewTextBoxColumn.Name = "oldFilenameDataGridViewTextBoxColumn";
-			this.oldFilenameDataGridViewTextBoxColumn.ReadOnly = true;
-			this.oldFilenameDataGridViewTextBoxColumn.Width = 170;
-			// 
-			// newFilenameDataGridViewTextBoxColumn
-			// 
-			this.newFilenameDataGridViewTextBoxColumn.DataPropertyName = "NewFilename";
-			this.newFilenameDataGridViewTextBoxColumn.Frozen = true;
-			this.newFilenameDataGridViewTextBoxColumn.HeaderText = "New Filename";
-			this.newFilenameDataGridViewTextBoxColumn.MinimumWidth = 100;
-			this.newFilenameDataGridViewTextBoxColumn.Name = "newFilenameDataGridViewTextBoxColumn";
-			this.newFilenameDataGridViewTextBoxColumn.Width = 300;
-			// 
-			// newNameStringDataGridViewTextBoxColumn
-			// 
-			this.newNameStringDataGridViewTextBoxColumn.DataPropertyName = "NewNameString";
-			this.newNameStringDataGridViewTextBoxColumn.Frozen = true;
-			this.newNameStringDataGridViewTextBoxColumn.HeaderText = "Data";
-			this.newNameStringDataGridViewTextBoxColumn.MinimumWidth = 100;
-			this.newNameStringDataGridViewTextBoxColumn.Name = "newNameStringDataGridViewTextBoxColumn";
-			this.newNameStringDataGridViewTextBoxColumn.ReadOnly = true;
-			this.newNameStringDataGridViewTextBoxColumn.ToolTipText = "The line of data from which the episode name was taken.";
-			this.newNameStringDataGridViewTextBoxColumn.Width = 250;
-			// 
-			// episodes
-			// 
-			this.episodes.DataSource = typeof(EpisodeRenamer.EpisodeEntry);
-			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -486,9 +487,9 @@ namespace EpisodeRenamer
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
 			this.Load += new System.EventHandler(this.MainForm_Load);
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.episodes)).EndInit();
 			this.grpReplace.ResumeLayout(false);
 			this.grpReplace.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.episodes)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

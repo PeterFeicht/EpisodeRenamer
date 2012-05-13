@@ -740,6 +740,7 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 			{
 				if(ReadFiles(txtEpisodeFolder.Text))
 				{
+					dataGridView.FirstDisplayedScrollingRowIndex = episodes.Count - 1;
 					string episodeNameFileName = Path.Combine(txtEpisodeFolder.Text, defaultNameFileName);
 					if(File.Exists(episodeNameFileName))
 					{
@@ -1072,5 +1073,6 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 		}
 
 		#endregion clipboard
+
 	}
 }
