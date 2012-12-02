@@ -401,10 +401,10 @@ namespace EpisodeRenamer
 					name = m.Value;
 
 			} // Matches TheTVDB syntax
-			else if(Regex.IsMatch(line, @"^[0-9]+ - [0-9]+\t.*", EpisodeEntry.DefaultRegexOptions))
+			else if(Regex.IsMatch(line, @"^[0-9]+ x [0-9]+\t.*", EpisodeEntry.DefaultRegexOptions))
 			{
 				Match mSeason = Regex.Match(line, @"^[0-9]+", EpisodeEntry.DefaultRegexOptions);
-				Match mEpisode = Regex.Match(line, @"(?<= - )[0-9]+", EpisodeEntry.DefaultRegexOptions);
+				Match mEpisode = Regex.Match(line, @"(?<= x )[0-9]+", EpisodeEntry.DefaultRegexOptions);
 
 				if(mSeason.Success && mEpisode.Success)
 					try
@@ -421,7 +421,7 @@ namespace EpisodeRenamer
 						episode = -1;
 					}
 
-				Match m = Regex.Match(line, @"(?<=[0-9]+ - [0-9]+\t)[^\t\n]+");
+				Match m = Regex.Match(line, @"(?<=[0-9]+ x [0-9]+\t)[^\t\n]+");
 				if(m.Success)
 					name = m.Value;
 

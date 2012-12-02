@@ -352,6 +352,8 @@ namespace EpisodeRenamer
 			// chkUseFolderName
 			// 
 			this.chkUseFolderName.AutoSize = true;
+			this.chkUseFolderName.Checked = true;
+			this.chkUseFolderName.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.chkUseFolderName.Location = new System.Drawing.Point(158, 149);
 			this.chkUseFolderName.Name = "chkUseFolderName";
 			this.chkUseFolderName.Size = new System.Drawing.Size(167, 17);
