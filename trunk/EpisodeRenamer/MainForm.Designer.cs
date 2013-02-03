@@ -460,6 +460,7 @@ namespace EpisodeRenamer
 			// 
 			// MainForm
 			// 
+			this.AllowDrop = true;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(884, 552);
@@ -488,6 +489,8 @@ namespace EpisodeRenamer
 			this.Text = "EpisodeRenamer by Pezo";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
 			this.Load += new System.EventHandler(this.MainForm_Load);
+			this.DragDrop += new System.Windows.Forms.DragEventHandler(this.txt_DragDrop);
+			this.DragEnter += new System.Windows.Forms.DragEventHandler(this.txt_DragEnter);
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.episodes)).EndInit();
 			this.grpReplace.ResumeLayout(false);

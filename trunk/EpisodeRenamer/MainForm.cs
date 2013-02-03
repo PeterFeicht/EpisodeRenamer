@@ -1041,8 +1041,15 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 
 			if(txt == null)
 			{
-				e.Effect = DragDropEffects.None;
-				return;
+				if(sender == this)
+				{
+					txt = txtEpisodeFolder;
+				}
+				else
+				{
+					e.Effect = DragDropEffects.None;
+					return;
+				}
 			}
 
 			if((e.AllowedEffect & DragDropEffects.Copy) == DragDropEffects.Copy)
