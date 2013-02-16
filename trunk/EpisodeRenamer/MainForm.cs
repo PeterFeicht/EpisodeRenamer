@@ -822,6 +822,11 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 				{
 					try
 					{
+						// Ignore huge files, prevents freeze when video file is dropped
+						FileInfo fi = new FileInfo(txtNameFile.Text);
+						if(fi.Length > 1024 * 1024)
+							return;
+
 						if(ReadNames(File.ReadAllLines(txtNameFile.Text)))
 							UpdateGridView();
 						else
