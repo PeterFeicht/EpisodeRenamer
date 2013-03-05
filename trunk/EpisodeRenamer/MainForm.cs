@@ -203,6 +203,7 @@ namespace EpisodeRenamer
 			try
 			{
 				files = Directory.GetFiles(path);
+				Array.Sort<string>(files);
 				folderName = Path.GetFileName(Path.GetFullPath(path));
 			}
 			catch(Exception ex)
