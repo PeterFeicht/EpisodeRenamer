@@ -287,7 +287,6 @@ namespace EpisodeRenamer
 			// episodes
 			// 
 			this.episodes.DataSource = typeof(EpisodeRenamer.EpisodeEntry);
-			this.episodes.Sort = "OldFilename";
 			// 
 			// btnRename
 			// 
