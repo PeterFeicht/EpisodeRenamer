@@ -483,7 +483,8 @@ namespace EpisodeRenamer
 			int tmp = dataGridView.FirstDisplayedScrollingRowIndex;
 			episodes.ResetBindings(false);
 			dataGridView.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
-			dataGridView.FirstDisplayedScrollingRowIndex = (tmp < episodes.Count ? tmp : episodes.Count - 1);
+			if(episodes.Count > 0)
+				dataGridView.FirstDisplayedScrollingRowIndex = (tmp < episodes.Count ? tmp : episodes.Count - 1);
 		}
 
 		private void SetReplaceGroup(bool visible)
@@ -766,7 +767,8 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 			{
 				if(ReadFiles(txtEpisodeFolder.Text))
 				{
-					dataGridView.FirstDisplayedScrollingRowIndex = episodes.Count - 1;
+					if(episodes.Count > 0)
+						dataGridView.FirstDisplayedScrollingRowIndex = episodes.Count - 1;
 					string episodeNameFileName = Path.Combine(txtEpisodeFolder.Text, defaultNameFileName);
 					if(File.Exists(episodeNameFileName))
 					{
