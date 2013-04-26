@@ -50,6 +50,7 @@ namespace EpisodeRenamer
 		string clipboardData = "";
 		StringBuilder sbClipboardData = new StringBuilder();
 		string folderName = "";
+		Queue<KeyValuePair<string, string>> toastQueue = new Queue<KeyValuePair<string, string>>();
 		bool log;
 
 		/// <summary>
@@ -123,11 +124,15 @@ namespace EpisodeRenamer
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 			SetReplaceGroup(false);
+			// Cannot be set from the form designer
+			grpToast.Click += Toast_Click;
 
 			openNameFile.FileName = defaultNameFileName;
 
 			if(Directory.Exists("H:\\"))
 				openFolder.SelectedPath = "H:\\";
+			if(Directory.Exists("H:\\Serien\\"))
+				openFolder.SelectedPath = "H:\\Serien\\";
 		}
 
 		bool NamesFromClipboard
@@ -514,6 +519,37 @@ namespace EpisodeRenamer
 			return true;
 		}
 
+		private void ShowToast(string text)
+		{
+			ShowToast("Finished", text);
+		}
+
+		private void ShowToast(string title, string text)
+		{
+			toastQueue.Enqueue(new KeyValuePair<string, string>(title, text));
+			// If no toast is visible, show it immediately
+			if(!panelToast.Visible)
+				DismissToast();
+		}
+
+		private void DismissToast()
+		{
+			if(toastQueue.Count > 0)
+			{
+				timerToast.Stop();
+				KeyValuePair<string, string> next = toastQueue.Dequeue();
+				grpToast.Text = next.Key;
+				lblToast.Text = next.Value;
+				panelToast.Visible = true;
+				timerToast.Start();
+			}
+			else
+			{
+				panelToast.Visible = false;
+				timerToast.Stop();
+			}
+		}
+
 		#endregion methods
 
 
@@ -528,6 +564,22 @@ namespace EpisodeRenamer
 		private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
 			Process.Start(@"http://msdn.microsoft.com/en-us/library/az24scfc.aspx");
+		}
+
+		private void panelToast_SizeChanged(object sender, EventArgs e)
+		{
+			Point p = new Point((Width - panelToast.Width) / 2, (Height - panelToast.Height) / 2);
+			panelToast.Location = p;
+		}
+
+		private void Toast_Click(object sender, EventArgs e)
+		{
+			DismissToast();
+		}
+
+		private void timerToast_Tick(object sender, EventArgs e)
+		{
+			DismissToast();
 		}
 
 		// dataGridView
@@ -859,7 +911,6 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 		{
 			List<Exception> exceptions = new List<Exception>();
 			int renamed = 0;
-			MessageBoxIcon icon;
 
 			foreach(EpisodeEntry item in episodes)
 			{
@@ -881,25 +932,22 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 
 			if(exceptions.Count > 0)
 			{
-				icon = MessageBoxIcon.Warning;
 				sb.AppendLine("One or more errors occurred while renaming the files:");
 
 				foreach(Exception ex in exceptions)
 					sb.AppendLine(ex.Message);
+
+				MessageBox.Show(sb.ToString(), "Finished", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 			}
 			else
 			{
-				icon = MessageBoxIcon.Information;
-				if(renamed == 0)
-					sb = new StringBuilder("No files have been renamed.");
-				else
-					sb.AppendLine("All files have successfully been renamed.");
 				episodes.Clear();
 				InvalidateFilenames();
 				btnReadFiles.PerformClick();
+				ShowToast(sb.ToString());
 			}
 
-			MessageBox.Show(sb.ToString(), "Finished", MessageBoxButtons.OK, icon);
+			
 		}
 
 		#endregion events
@@ -1113,6 +1161,5 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 		}
 
 		#endregion clipboard
-
 	}
 }
