@@ -58,9 +58,9 @@
 			// 
 			// txtData
 			// 
-			this.txtData.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.txtData.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtData.Location = new System.Drawing.Point(12, 41);
 			this.txtData.Multiline = true;
 			this.txtData.Name = "txtData";
@@ -71,14 +71,14 @@
 			// 
 			// label1
 			// 
-			this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.label1.Location = new System.Drawing.Point(12, 9);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(473, 29);
 			this.label1.TabIndex = 3;
 			this.label1.Text = "Check the data coming from the clipboard and remove or edit lines to fit your nee" +
-				"ds.";
+    "ds.";
 			// 
 			// CheckClipboardDataForm
 			// 
@@ -95,6 +95,7 @@
 			this.Name = "CheckClipboardDataForm";
 			this.ShowInTaskbar = false;
 			this.Text = "Check the clipboard data";
+			this.Load += new System.EventHandler(this.CheckClipboardDataForm_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
