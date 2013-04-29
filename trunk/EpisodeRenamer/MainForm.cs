@@ -778,7 +778,7 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 			frmChangePrefix.Separator = EpisodeEntry.Separator;
 			frmChangePrefix.EpisodeNumberDigits = EpisodeEntry.EpisodeNumberDigits;
 
-			if(frmChangePrefix.ShowDialog() == DialogResult.OK)
+			if(frmChangePrefix.ShowDialog(this) == DialogResult.OK)
 			{
 				EpisodeEntry.EpisodePrefix = frmChangePrefix.EpisodePrefix;
 				EpisodeEntry.SeasonPrefix = frmChangePrefix.SeasonPrefix;
@@ -984,7 +984,7 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 				frmCheckClipboard.Data = "Error retrieving data from clipboard.";
 			}
 
-			if((frmCheckClipboard.ShowDialog() == DialogResult.OK) && (frmCheckClipboard.Data != ""))
+			if((frmCheckClipboard.ShowDialog(this) == DialogResult.OK) && (frmCheckClipboard.Data != ""))
 			{
 				NamesFromClipboard = true;
 				clipboardData = frmCheckClipboard.Data;
@@ -1009,7 +1009,7 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 
 			frmCheckClipboard.Data = clipboardData;
 
-			if(frmCheckClipboard.ShowDialog() == DialogResult.OK)
+			if(frmCheckClipboard.ShowDialog(this) == DialogResult.OK)
 			{
 				if(string.IsNullOrWhiteSpace(frmCheckClipboard.Data))
 					NamesFromClipboard = false;
