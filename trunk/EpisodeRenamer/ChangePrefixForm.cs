@@ -101,8 +101,6 @@ namespace EpisodeRenamer
 
 		private void ChangePrefixForm_Load(object sender, EventArgs e)
 		{
-			if(Owner != null)
-				Location = new Point(Owner.Left + (Owner.Width - Width) / 2, Owner.Top + (Owner.Height - Height) / 2);
 			UpdateExample();
 		}
 

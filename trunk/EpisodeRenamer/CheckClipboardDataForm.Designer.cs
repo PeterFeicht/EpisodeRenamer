@@ -94,8 +94,8 @@
 			this.MinimumSize = new System.Drawing.Size(350, 275);
 			this.Name = "CheckClipboardDataForm";
 			this.ShowInTaskbar = false;
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Check the clipboard data";
-			this.Load += new System.EventHandler(this.CheckClipboardDataForm_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
