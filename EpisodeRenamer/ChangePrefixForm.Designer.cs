@@ -46,14 +46,14 @@
 			// 
 			// label1
 			// 
-			this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.label1.Location = new System.Drawing.Point(12, 9);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(260, 56);
 			this.label1.TabIndex = 0;
 			this.label1.Text = "Here you can change the prefixes for season and episode numbers as well as the se" +
-				"parator used to separate the name of the show, the numbers and the name.";
+    "parator used to separate the name of the show, the numbers and the name.";
 			// 
 			// label2
 			// 
@@ -160,12 +160,12 @@
 			// numDigits
 			// 
 			this.numDigits.Location = new System.Drawing.Point(118, 121);
-			this.numDigits.Maximum = new decimal(new int[ ] {
+			this.numDigits.Maximum = new decimal(new int[] {
             4,
             0,
             0,
             0});
-			this.numDigits.Minimum = new decimal(new int[ ] {
+			this.numDigits.Minimum = new decimal(new int[] {
             1,
             0,
             0,
@@ -173,7 +173,7 @@
 			this.numDigits.Name = "numDigits";
 			this.numDigits.Size = new System.Drawing.Size(100, 20);
 			this.numDigits.TabIndex = 3;
-			this.numDigits.Value = new decimal(new int[ ] {
+			this.numDigits.Value = new decimal(new int[] {
             2,
             0,
             0,
@@ -203,6 +203,7 @@
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
 			this.Name = "ChangePrefixForm";
 			this.ShowInTaskbar = false;
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Change prefixes";
 			this.Load += new System.EventHandler(this.ChangePrefixForm_Load);
 			((System.ComponentModel.ISupportInitialize)(this.numDigits)).EndInit();
