@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using EpisodeRenamer.Properties;
 
 namespace EpisodeRenamer
 {
@@ -33,8 +34,6 @@ namespace EpisodeRenamer
 
 		ChangePrefixForm frmChangePrefix;
 		CheckClipboardDataForm frmCheckClipboard;
-
-		DatagridViewCheckBoxHeaderCell chkHeader;
 
 		/// <summary>
 		/// Use property!
@@ -111,13 +110,14 @@ namespace EpisodeRenamer
 				Trace.WriteLine(ex.StackTrace);
 			}
 
+			
 			frmChangePrefix = new ChangePrefixForm();
 			frmCheckClipboard = new CheckClipboardDataForm();
-			chkHeader = new DatagridViewCheckBoxHeaderCell();
 
+			// Create grid view checkbox header cell
+			DatagridViewCheckBoxHeaderCell chkHeader = new DatagridViewCheckBoxHeaderCell();
 			chkHeader.OnCheckBoxClicked += new CheckBoxClickedEventHandler(chkHeader_OnCheckBoxClicked);
 			chkHeader.Value = "";
-
 			dataGridView.Columns[0].HeaderCell = chkHeader;
 		}
 
@@ -133,6 +133,19 @@ namespace EpisodeRenamer
 				openFolder.SelectedPath = "H:\\";
 			if(Directory.Exists("H:\\Serien\\"))
 				openFolder.SelectedPath = "H:\\Serien\\";
+
+			LoadSettings();
+		}
+
+		private void LoadSettings()
+		{
+			chkUseFolderName.Checked = Settings.Default.UseFolder;
+			Location = Settings.Default.WindowPosition;
+
+			EpisodeEntry.SeasonPrefix = Settings.Default.SeasonPrefix;
+			EpisodeEntry.EpisodePrefix = Settings.Default.EpisodePrefix;
+			EpisodeEntry.Separator = Settings.Default.Separator;
+			EpisodeEntry.EpisodeNumberDigits = Settings.Default.NumDigits;
 		}
 
 		bool NamesFromClipboard
@@ -559,6 +572,8 @@ namespace EpisodeRenamer
 		{
 			UnlinkClipboard();
 			dataGridView.DataSource = null;
+			Settings.Default.WindowPosition = Location;
+			Settings.Default.Save();
 		}
 
 		private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -784,11 +799,20 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 				EpisodeEntry.SeasonPrefix = frmChangePrefix.SeasonPrefix;
 				EpisodeEntry.Separator = frmChangePrefix.Separator;
 				EpisodeEntry.EpisodeNumberDigits = frmChangePrefix.EpisodeNumberDigits;
+
+				Settings.Default.EpisodePrefix = EpisodeEntry.EpisodePrefix;
+				Settings.Default.SeasonPrefix = EpisodeEntry.SeasonPrefix;
+				Settings.Default.Separator = EpisodeEntry.Separator;
+				Settings.Default.NumDigits = EpisodeEntry.EpisodeNumberDigits;
+				Settings.Default.Save();
 			}
 		}
 
 		private void chkUseFolderName_CheckedChanged(object sender, EventArgs e)
 		{
+			Settings.Default.UseFolder = chkUseFolderName.Checked;
+			Settings.Default.Save();
+
 			if(btnReadNames.Enabled)
 				btnReadNames.PerformClick();
 		}
