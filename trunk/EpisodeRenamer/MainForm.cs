@@ -1152,6 +1152,8 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 					return;
 				}
 
+				this.Activate();
+
 				if(txt == txtEpisodeFolder)
 				{
 					if(File.Exists(txt.Text))
