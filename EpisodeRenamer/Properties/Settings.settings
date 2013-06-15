@@ -20,5 +20,11 @@
     <Setting Name="UseFolder" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="CheckClipboardSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">513, 350</Value>
+    </Setting>
+    <Setting Name="WindowSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">900, 590</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

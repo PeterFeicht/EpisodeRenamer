@@ -141,6 +141,8 @@ namespace EpisodeRenamer
 		{
 			chkUseFolderName.Checked = Settings.Default.UseFolder;
 			Location = Settings.Default.WindowPosition;
+			Size = Settings.Default.WindowSize;
+			frmCheckClipboard.Size = Settings.Default.CheckClipboardSize;
 
 			EpisodeEntry.SeasonPrefix = Settings.Default.SeasonPrefix;
 			EpisodeEntry.EpisodePrefix = Settings.Default.EpisodePrefix;
@@ -573,6 +575,8 @@ namespace EpisodeRenamer
 			UnlinkClipboard();
 			dataGridView.DataSource = null;
 			Settings.Default.WindowPosition = Location;
+			Settings.Default.WindowSize = Size;
+			Settings.Default.CheckClipboardSize = frmCheckClipboard.Size;
 			Settings.Default.Save();
 		}
 
