@@ -94,5 +94,29 @@ namespace EpisodeRenamer.Properties {
                 this["UseFolder"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("513, 350")]
+        public global::System.Drawing.Size CheckClipboardSize {
+            get {
+                return ((global::System.Drawing.Size)(this["CheckClipboardSize"]));
+            }
+            set {
+                this["CheckClipboardSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("900, 590")]
+        public global::System.Drawing.Size WindowSize {
+            get {
+                return ((global::System.Drawing.Size)(this["WindowSize"]));
+            }
+            set {
+                this["WindowSize"] = value;
+            }
+        }
     }
 }
