@@ -28,6 +28,39 @@ namespace EpisodeRenamer
 			}
 		}
 
+		public string Description
+		{
+			get
+			{
+				return label1.Text;
+			}
+			set
+			{
+				label1.Text = value;
+			}
+		}
+
+		public bool HasCancel
+		{
+			get
+			{
+				return btnCancel.Visible;
+			}
+			set
+			{
+				btnCancel.Visible = value;
+				// Move OK button to the middle/side
+				if(value)
+				{
+					btnOK.Left = ClientSize.Width - btnCancel.Left - btnOK.Width;
+				}
+				else
+				{
+					btnOK.Left = (ClientSize.Width - btnOK.Width) / 2;
+				}
+			}
+		}
+
 		private void txtData_KeyDown(object sender, KeyEventArgs e)
 		{
 			switch(e.KeyData)
