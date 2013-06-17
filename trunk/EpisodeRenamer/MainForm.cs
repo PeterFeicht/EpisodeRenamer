@@ -34,6 +34,7 @@ namespace EpisodeRenamer
 
 		ChangePrefixForm frmChangePrefix;
 		CheckClipboardDataForm frmCheckClipboard;
+		CheckClipboardDataForm frmShowIgnored;
 
 		/// <summary>
 		/// Use property!
@@ -63,6 +64,9 @@ namespace EpisodeRenamer
 			@".*\.jpg$",
 			@".*\.png$",
 			@".*\.ico$" };
+		Regex[ ] blacklistFilters;
+		readonly Regex sample = new Regex("sample", RegexOptions.IgnoreCase);
+		LinkedList<string> ignoredFiles = new LinkedList<string>();
 
 		public readonly string defaultNameFileName = "Episode Names.txt";
 		private bool dropped;
@@ -113,12 +117,22 @@ namespace EpisodeRenamer
 			
 			frmChangePrefix = new ChangePrefixForm();
 			frmCheckClipboard = new CheckClipboardDataForm();
+			frmShowIgnored = new CheckClipboardDataForm();
+			frmShowIgnored.HasCancel = false;
+			frmShowIgnored.Description = "Files that were ignored:";
+			frmShowIgnored.Width = 600;
+			frmShowIgnored.Height = 400;
 
 			// Create grid view checkbox header cell
 			DatagridViewCheckBoxHeaderCell chkHeader = new DatagridViewCheckBoxHeaderCell();
 			chkHeader.OnCheckBoxClicked += new CheckBoxClickedEventHandler(chkHeader_OnCheckBoxClicked);
 			chkHeader.Value = "";
 			dataGridView.Columns[0].HeaderCell = chkHeader;
+
+			// Initialize Regular Expression objects for faster file filtering
+			blacklistFilters = new Regex[FilenameBlacklist.Length];
+			for(int j = 0; j < blacklistFilters.Length; j++)
+				blacklistFilters[j] = new Regex(FilenameBlacklist[j], RegexOptions.IgnoreCase);
 		}
 
 		private void MainForm_Load(object sender, EventArgs e)
@@ -213,6 +227,8 @@ namespace EpisodeRenamer
 			lblEditWrong.Visible = false;
 			btnReadNames.Enabled = false;
 			episodes.Clear();
+			ignoredFiles.Clear();
+			linkShowIgnored.Visible = false;
 		}
 
 		bool ReadFiles(string path)
@@ -241,8 +257,16 @@ namespace EpisodeRenamer
 			{
 				if(Path.GetExtension(item) != "")
 				{
-					if(Array.Exists<string>( FilenameBlacklist, (string pat) => Regex.IsMatch(item, pat, RegexOptions.IgnoreCase | RegexOptions.Singleline) ))
+					// Filter unwanted extensions
+					if(Array.Exists<Regex>(blacklistFilters, (Regex r) => r.IsMatch(item)))
 						continue;
+					// Filter sample files, if activated
+					string name = Path.GetFileName(item);
+					if(chkIgnoreSample.Checked && sample.IsMatch(name))
+					{
+						ignoredFiles.AddLast(name);
+						continue;
+					}
 
 					Trace.WriteLine(item);
 					Trace.Indent();
@@ -259,6 +283,7 @@ namespace EpisodeRenamer
 			Trace.WriteLine("ReadFiles finished.");
 			Trace.Unindent();
 			btnReadNames.Enabled = true;
+			linkShowIgnored.Visible = (ignoredFiles.First != null);
 			return true;
 		}
 
@@ -326,7 +351,7 @@ namespace EpisodeRenamer
 				// Either IMDb or generic syntax matched the line and at least an episode name could be extracted
 				// so search for the corresponding EpisodeEntry and save the data
 
-				EpisodeEntry e;
+				EpisodeEntry e = null;
 				Point p;
 
 				// Only episode name
@@ -343,21 +368,22 @@ namespace EpisodeRenamer
 				else
 				{
 					p = new Point(season, episode);
-					int idx = -1;
 
 					// Find the EpisodeEntry corresponding to the episode number extracted
-					for(int j = 0; j < episodes.Count; j++)
-						if(((EpisodeEntry)episodes[j]).EpisodeNumber == p)
+					foreach(object o in episodes)
+					{
+						EpisodeEntry tmp = (EpisodeEntry)o;
+
+						if(tmp.EpisodeNumber == p)
 						{
-							idx = j;
+							e = tmp;
 							break;
 						}
+					}
 
 					// Episode not found, continue with next line
-					if(idx < 0)
+					if(e == null)
 						continue;
-
-					e = (EpisodeEntry)episodes[idx];
 				}
 
 				if(chkUseFolderName.Checked)
@@ -526,7 +552,7 @@ namespace EpisodeRenamer
 			{
 				Regex r = new Regex(regex);
 			}
-			catch
+			catch(ArgumentException)
 			{
 				return false;
 			}
@@ -821,6 +847,12 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 				btnReadNames.PerformClick();
 		}
 
+		private void chkIgnoreSample_CheckedChanged(object sender, EventArgs e)
+		{
+			if(btnReadFiles.Enabled)
+				btnReadFiles.PerformClick();
+		}
+
 		private void chkPostReplace_CheckedChanged(object sender, EventArgs e)
 		{
 			SetReplaceGroup(chkPostReplace.Checked);
@@ -837,6 +869,15 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 				else
 					t.ForeColor = Color.Red;
 			}
+		}
+
+		private void linkShowIgnored_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			StringBuilder sb = new StringBuilder();
+			foreach(string s in ignoredFiles)
+				sb.AppendLine(s);
+			frmShowIgnored.Data = sb.ToString();
+			frmShowIgnored.ShowDialog(this);
 		}
 
 		// OUTPUT

@@ -66,11 +66,13 @@ namespace EpisodeRenamer
 			this.lblToast = new System.Windows.Forms.Label();
 			this.panelToast = new System.Windows.Forms.Panel();
 			this.timerToast = new System.Windows.Forms.Timer(this.components);
+			this.chkIgnoreSample = new System.Windows.Forms.CheckBox();
 			this.enabledDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
 			this.oldFilenameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.newFilenameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.newNameStringDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.episodes = new System.Windows.Forms.BindingSource(this.components);
+			this.linkShowIgnored = new System.Windows.Forms.LinkLabel();
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
 			this.grpReplace.SuspendLayout();
 			this.grpToast.SuspendLayout();
@@ -460,6 +462,17 @@ namespace EpisodeRenamer
 			this.timerToast.Interval = 2000;
 			this.timerToast.Tick += new System.EventHandler(this.timerToast_Tick);
 			// 
+			// chkIgnoreSample
+			// 
+			this.chkIgnoreSample.AutoSize = true;
+			this.chkIgnoreSample.Location = new System.Drawing.Point(547, 94);
+			this.chkIgnoreSample.Name = "chkIgnoreSample";
+			this.chkIgnoreSample.Size = new System.Drawing.Size(113, 17);
+			this.chkIgnoreSample.TabIndex = 17;
+			this.chkIgnoreSample.Text = "Ignore sample files";
+			this.chkIgnoreSample.UseVisualStyleBackColor = true;
+			this.chkIgnoreSample.CheckedChanged += new System.EventHandler(this.chkIgnoreSample_CheckedChanged);
+			// 
 			// enabledDataGridViewCheckBoxColumn
 			// 
 			this.enabledDataGridViewCheckBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
@@ -507,12 +520,26 @@ namespace EpisodeRenamer
 			// 
 			this.episodes.DataSource = typeof(EpisodeRenamer.EpisodeEntry);
 			// 
+			// linkShowIgnored
+			// 
+			this.linkShowIgnored.AutoSize = true;
+			this.linkShowIgnored.Location = new System.Drawing.Point(666, 95);
+			this.linkShowIgnored.Name = "linkShowIgnored";
+			this.linkShowIgnored.Size = new System.Drawing.Size(72, 13);
+			this.linkShowIgnored.TabIndex = 18;
+			this.linkShowIgnored.TabStop = true;
+			this.linkShowIgnored.Text = "Show ignored";
+			this.linkShowIgnored.Visible = false;
+			this.linkShowIgnored.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkShowIgnored_LinkClicked);
+			// 
 			// MainForm
 			// 
 			this.AllowDrop = true;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(884, 552);
+			this.Controls.Add(this.linkShowIgnored);
+			this.Controls.Add(this.chkIgnoreSample);
 			this.Controls.Add(this.panelToast);
 			this.Controls.Add(this.chkPostReplace);
 			this.Controls.Add(this.grpReplace);
@@ -596,6 +623,8 @@ namespace EpisodeRenamer
 		private System.Windows.Forms.Label lblToast;
 		private System.Windows.Forms.Panel panelToast;
 		private System.Windows.Forms.Timer timerToast;
+		private System.Windows.Forms.CheckBox chkIgnoreSample;
+		private System.Windows.Forms.LinkLabel linkShowIgnored;
 	}
 }
 
