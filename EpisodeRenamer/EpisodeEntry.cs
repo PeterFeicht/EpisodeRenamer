@@ -389,6 +389,15 @@ namespace EpisodeRenamer
 			Series = origSeries;
 		}
 
+		public override string ToString()
+		{
+			return new StringBuilder("Episode: ")
+				.Append(EpisodeNumber.ToString())
+				.Append(" ")
+				.Append(OldFilename)
+				.ToString();
+		}
+
 		#endregion methods
 
 
