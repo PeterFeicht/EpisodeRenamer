@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -35,6 +36,7 @@ namespace EpisodeRenamer
 		ChangePrefixForm frmChangePrefix;
 		CheckClipboardDataForm frmCheckClipboard;
 		CheckClipboardDataForm frmShowIgnored;
+		CheckClipboardDataForm frmHistory;
 
 		/// <summary>
 		/// Use property!
@@ -67,6 +69,7 @@ namespace EpisodeRenamer
 		Regex[ ] blacklistFilters;
 		readonly Regex sample = new Regex("sample", RegexOptions.IgnoreCase);
 		LinkedList<string> ignoredFiles = new LinkedList<string>();
+		StringCollection history = new StringCollection();
 
 		public readonly string defaultNameFileName = "Episode Names.txt";
 		private bool dropped;
@@ -119,9 +122,16 @@ namespace EpisodeRenamer
 			frmCheckClipboard = new CheckClipboardDataForm();
 			frmShowIgnored = new CheckClipboardDataForm();
 			frmShowIgnored.HasCancel = false;
+			frmShowIgnored.Text = "Ignored";
 			frmShowIgnored.Description = "Files that were ignored:";
 			frmShowIgnored.Width = 600;
 			frmShowIgnored.Height = 400;
+			frmHistory = new CheckClipboardDataForm();
+			frmHistory.HasCancel = false;
+			frmHistory.Text = "History";
+			frmHistory.Description = "The last series that were renamed";
+			frmHistory.Width = 250;
+			frmHistory.Height = 400;
 
 			// Create grid view checkbox header cell
 			DatagridViewCheckBoxHeaderCell chkHeader = new DatagridViewCheckBoxHeaderCell();
@@ -157,6 +167,8 @@ namespace EpisodeRenamer
 			Location = Settings.Default.WindowPosition;
 			Size = Settings.Default.WindowSize;
 			frmCheckClipboard.Size = Settings.Default.CheckClipboardSize;
+			if(Settings.Default.History != null)
+				history = Settings.Default.History;
 
 			EpisodeEntry.SeasonPrefix = Settings.Default.SeasonPrefix;
 			EpisodeEntry.EpisodePrefix = Settings.Default.EpisodePrefix;
@@ -603,6 +615,7 @@ namespace EpisodeRenamer
 			Settings.Default.WindowPosition = Location;
 			Settings.Default.WindowSize = Size;
 			Settings.Default.CheckClipboardSize = frmCheckClipboard.Size;
+			Settings.Default.History = history;
 			Settings.Default.Save();
 		}
 
@@ -999,6 +1012,12 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 				sb.AppendFormat("{0} files have", renamed);
 			sb.AppendLine(" been renamed.");
 
+			string series = Path.GetFileName(txtEpisodeFolder.Text);
+			history.Remove(series);
+			history.Add(series);
+			while(history.Count > 20)
+				history.RemoveAt(0);
+
 			if(exceptions.Count > 0)
 			{
 				sb.AppendLine("One or more errors occurred while renaming the files:");
@@ -1015,8 +1034,15 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 				btnReadFiles.PerformClick();
 				ShowToast(sb.ToString());
 			}
+		}
 
-			
+		private void btnHistory_Click(object sender, EventArgs e)
+		{
+			StringBuilder sb = new StringBuilder();
+			foreach(string s in history)
+				sb.AppendLine(s);
+			frmHistory.Data = sb.ToString();
+			frmHistory.ShowDialog(this);
 		}
 
 		#endregion events
