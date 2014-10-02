@@ -67,12 +67,13 @@ namespace EpisodeRenamer
 			this.panelToast = new System.Windows.Forms.Panel();
 			this.timerToast = new System.Windows.Forms.Timer(this.components);
 			this.chkIgnoreSample = new System.Windows.Forms.CheckBox();
+			this.linkShowIgnored = new System.Windows.Forms.LinkLabel();
 			this.enabledDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
 			this.oldFilenameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.newFilenameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.newNameStringDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.episodes = new System.Windows.Forms.BindingSource(this.components);
-			this.linkShowIgnored = new System.Windows.Forms.LinkLabel();
+			this.btnHistory = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
 			this.grpReplace.SuspendLayout();
 			this.grpToast.SuspendLayout();
@@ -473,6 +474,18 @@ namespace EpisodeRenamer
 			this.chkIgnoreSample.UseVisualStyleBackColor = true;
 			this.chkIgnoreSample.CheckedChanged += new System.EventHandler(this.chkIgnoreSample_CheckedChanged);
 			// 
+			// linkShowIgnored
+			// 
+			this.linkShowIgnored.AutoSize = true;
+			this.linkShowIgnored.Location = new System.Drawing.Point(666, 95);
+			this.linkShowIgnored.Name = "linkShowIgnored";
+			this.linkShowIgnored.Size = new System.Drawing.Size(72, 13);
+			this.linkShowIgnored.TabIndex = 18;
+			this.linkShowIgnored.TabStop = true;
+			this.linkShowIgnored.Text = "Show ignored";
+			this.linkShowIgnored.Visible = false;
+			this.linkShowIgnored.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkShowIgnored_LinkClicked);
+			// 
 			// enabledDataGridViewCheckBoxColumn
 			// 
 			this.enabledDataGridViewCheckBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
@@ -520,17 +533,16 @@ namespace EpisodeRenamer
 			// 
 			this.episodes.DataSource = typeof(EpisodeRenamer.EpisodeEntry);
 			// 
-			// linkShowIgnored
+			// btnHistory
 			// 
-			this.linkShowIgnored.AutoSize = true;
-			this.linkShowIgnored.Location = new System.Drawing.Point(666, 95);
-			this.linkShowIgnored.Name = "linkShowIgnored";
-			this.linkShowIgnored.Size = new System.Drawing.Size(72, 13);
-			this.linkShowIgnored.TabIndex = 18;
-			this.linkShowIgnored.TabStop = true;
-			this.linkShowIgnored.Text = "Show ignored";
-			this.linkShowIgnored.Visible = false;
-			this.linkShowIgnored.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkShowIgnored_LinkClicked);
+			this.btnHistory.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnHistory.Location = new System.Drawing.Point(797, 90);
+			this.btnHistory.Name = "btnHistory";
+			this.btnHistory.Size = new System.Drawing.Size(75, 23);
+			this.btnHistory.TabIndex = 19;
+			this.btnHistory.Text = "History...";
+			this.btnHistory.UseVisualStyleBackColor = true;
+			this.btnHistory.Click += new System.EventHandler(this.btnHistory_Click);
 			// 
 			// MainForm
 			// 
@@ -538,6 +550,7 @@ namespace EpisodeRenamer
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(884, 552);
+			this.Controls.Add(this.btnHistory);
 			this.Controls.Add(this.linkShowIgnored);
 			this.Controls.Add(this.chkIgnoreSample);
 			this.Controls.Add(this.panelToast);
@@ -625,6 +638,7 @@ namespace EpisodeRenamer
 		private System.Windows.Forms.Timer timerToast;
 		private System.Windows.Forms.CheckBox chkIgnoreSample;
 		private System.Windows.Forms.LinkLabel linkShowIgnored;
+		private System.Windows.Forms.Button btnHistory;
 	}
 }
 
