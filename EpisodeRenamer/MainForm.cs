@@ -74,20 +74,17 @@ namespace EpisodeRenamer
 		public readonly string defaultNameFileName = "Episode Names.txt";
 		private bool dropped;
 
-		public MainForm() : this(false)
-		{
-			
+		public MainForm()
+			: this(false) {
+
 		}
 
-		public MainForm(bool log)
-		{
+		public MainForm(bool log) {
 			InitializeComponent();
 			this.log = log;
 
-			try
-			{
-				if(log)
-				{
+			try {
+				if(log) {
 					// Create logfile
 					string filename = string.Format("EpisodeRenamer_{0:yyyy-MM-dd_HH.mm}.log", DateTime.UtcNow);
 
@@ -98,26 +95,21 @@ namespace EpisodeRenamer
 				Trace.WriteLine("EpisodeRenamer Logfile");
 				Trace.WriteLine(Application.ExecutablePath);
 				Trace.WriteLine("");
-			}
-			catch
-			{
+			} catch {
 				this.Text += " - unable to create logfile";
 			}
 
-			try
-			{
+			try {
 				// Try to get the executable icon for use as window icon
 				Icon i = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
 				this.Icon = i;
-			}
-			catch(Exception ex)
-			{
+			} catch(Exception ex) {
 				Trace.WriteLine("Exception in MainForm constructor: ExtractAssociatedIcon.");
 				Trace.WriteLine(ex.Message);
 				Trace.WriteLine(ex.StackTrace);
 			}
 
-			
+
 			frmChangePrefix = new ChangePrefixForm();
 			frmCheckClipboard = new CheckClipboardDataForm();
 			frmShowIgnored = new CheckClipboardDataForm();
@@ -141,34 +133,36 @@ namespace EpisodeRenamer
 
 			// Initialize Regular Expression objects for faster file filtering
 			blacklistFilters = new Regex[FilenameBlacklist.Length];
-			for(int j = 0; j < blacklistFilters.Length; j++)
+			for(int j = 0; j < blacklistFilters.Length; j++) {
 				blacklistFilters[j] = new Regex(FilenameBlacklist[j], RegexOptions.IgnoreCase);
+			}
 		}
 
-		private void MainForm_Load(object sender, EventArgs e)
-		{
+		private void MainForm_Load(object sender, EventArgs e) {
 			SetReplaceGroup(false);
 			// Cannot be set from the form designer
 			grpToast.Click += Toast_Click;
 
 			openNameFile.FileName = defaultNameFileName;
 
-			if(Directory.Exists("H:\\"))
+			if(Directory.Exists("H:\\")) {
 				openFolder.SelectedPath = "H:\\";
-			if(Directory.Exists("H:\\Serien\\"))
+			}
+			if(Directory.Exists("H:\\Serien\\")) {
 				openFolder.SelectedPath = "H:\\Serien\\";
+			}
 
 			LoadSettings();
 		}
 
-		private void LoadSettings()
-		{
+		private void LoadSettings() {
 			chkUseFolderName.Checked = Settings.Default.UseFolder;
 			Location = Settings.Default.WindowPosition;
 			Size = Settings.Default.WindowSize;
 			frmCheckClipboard.Size = Settings.Default.CheckClipboardSize;
-			if(Settings.Default.History != null)
+			if(Settings.Default.History != null) {
 				history = Settings.Default.History;
+			}
 
 			EpisodeEntry.SeasonPrefix = Settings.Default.SeasonPrefix;
 			EpisodeEntry.EpisodePrefix = Settings.Default.EpisodePrefix;
@@ -176,16 +170,14 @@ namespace EpisodeRenamer
 			EpisodeEntry.EpisodeNumberDigits = Settings.Default.NumDigits;
 		}
 
-		bool NamesFromClipboard
-		{
-			get
-			{
+		bool NamesFromClipboard {
+			get {
 				return namesFromClipboard;
 			}
-			set
-			{
-				if(namesFromClipboard == value)
+			set {
+				if(namesFromClipboard == value) {
 					return;
+				}
 
 				namesFromClipboard = value;
 				txtNameFile.ReadOnly = value;
@@ -196,45 +188,39 @@ namespace EpisodeRenamer
 			}
 		}
 
-		bool MonitoringClipboard
-		{
-			get
-			{
+		bool MonitoringClipboard {
+			get {
 				return monitoringClipboard;
 			}
-			set
-			{
-				if(monitoringClipboard == value)
+			set {
+				if(monitoringClipboard == value) {
 					return;
+				}
 
 				monitoringClipboard = value;
 				btnPasteNames.Enabled = !value;
 				txtNameFile.ReadOnly = value;
 				chkUseFolderName.Enabled = !value;
 
-				if(value)
-				{
+				if(value) {
 					btnEditClipboardData.Enabled = false;
 					btnSaveClipboardData.Enabled = false;
 					txtNameFile.Text = "(Monitoring clipboard, click '" + btnReadNames.Text + "' or uncheck the box to finish)";
 
 					nextClipboardViewer = (IntPtr)SetClipboardViewer((int)this.Handle);
 					nextClipboardViewerSet = true;
-				}
-				else
-				{
+				} else {
 					UnlinkClipboard();
 				}
 			}
 		}
-		
+
 		#endregion fields, ctor, properties
 
 
 		#region methods
 
-		void InvalidateFilenames()
-		{
+		void InvalidateFilenames() {
 			btnRename.Enabled = false;
 			lblEditWrong.Visible = false;
 			btnReadNames.Enabled = false;
@@ -243,19 +229,15 @@ namespace EpisodeRenamer
 			linkShowIgnored.Visible = false;
 		}
 
-		bool ReadFiles(string path)
-		{
+		bool ReadFiles(string path) {
 			Trace.WriteLine("ReadFiles called: " + path);
 			string[ ] files;
 
-			try
-			{
+			try {
 				files = Directory.GetFiles(path);
 				Array.Sort<string>(files);
 				folderName = Path.GetFileName(Path.GetFullPath(path));
-			}
-			catch(Exception ex)
-			{
+			} catch(Exception ex) {
 				Trace.WriteLine("Exception (" + ex.GetType() + ") in ReadFiles: list directory.");
 				Trace.WriteLine(ex.Message);
 				Trace.WriteLine(ex.StackTrace);
@@ -265,17 +247,15 @@ namespace EpisodeRenamer
 			Trace.Indent();
 			Trace.WriteLine("Directory Listing successful, number of files: " + files.Length);
 
-			foreach(string item in files)
-			{
-				if(Path.GetExtension(item) != "")
-				{
+			foreach(string item in files) {
+				if(Path.GetExtension(item) != "") {
 					// Filter unwanted extensions
-					if(Array.Exists<Regex>(blacklistFilters, (Regex r) => r.IsMatch(item)))
+					if(Array.Exists<Regex>(blacklistFilters, (Regex r) => r.IsMatch(item))) {
 						continue;
+					}
 					// Filter sample files, if activated
 					string name = Path.GetFileName(item);
-					if(chkIgnoreSample.Checked && sample.IsMatch(name))
-					{
+					if(chkIgnoreSample.Checked && sample.IsMatch(name)) {
 						ignoredFiles.AddLast(name);
 						continue;
 					}
@@ -304,10 +284,10 @@ namespace EpisodeRenamer
 		/// </summary>
 		/// <param name="data">The lines to match</param>
 		/// <returns><value>false</value> in case <paramref name="data"/> is <value>null</value> or empty, otherwise true.</returns>
-		bool ReadNames(string data)
-		{
-			if(string.IsNullOrWhiteSpace(data))
+		bool ReadNames(string data) {
+			if(string.IsNullOrWhiteSpace(data)) {
 				return false;
+			}
 
 			return ReadNames(data.Split(new string[ ] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries));
 		}
@@ -317,23 +297,19 @@ namespace EpisodeRenamer
 		/// </summary>
 		/// <param name="lines">The lines to match</param>
 		/// <returns><value>false</value> in case <paramref name="lines"/> is <value>null</value> or empty, otherwise true.</returns>
-		bool ReadNames(string[] lines)
-		{
+		bool ReadNames(string[ ] lines) {
 			int count = 0;
 
-			if((lines == null) || (lines.Length < 1))
+			if((lines == null) || (lines.Length < 1)) {
 				return false;
+			}
 
 			Regex post = null;
 
-			if(chkPostReplace.Checked)
-			{
-				try
-				{
+			if(chkPostReplace.Checked) {
+				try {
 					post = new Regex(txtSearch.Text, chkIgnoreCase.Checked ? RegexOptions.IgnoreCase : RegexOptions.None);
-				}
-				catch(ArgumentException ex)
-				{
+				} catch(ArgumentException ex) {
 					Trace.WriteLine("ArgumentException in ReadNames: Regex constructor");
 					Trace.WriteLine(ex.Message);
 
@@ -341,24 +317,26 @@ namespace EpisodeRenamer
 				}
 			}
 
-			foreach(string line in lines)
-			{
+			foreach(string line in lines) {
 				int season;
 				int episode;
 				string name;
 
-				if(string.IsNullOrWhiteSpace(line))
+				if(string.IsNullOrWhiteSpace(line)) {
 					continue;
+				}
 
-				if(count >= episodes.Count)
+				if(count >= episodes.Count) {
 					break;
+				}
 
 				// Extract season number, episode number and episode name from line
 				ExtractEpisodeInformation(line, out season, out episode, out name);
 
 				// No name, continue with next line
-				if(string.IsNullOrWhiteSpace(name))
+				if(string.IsNullOrWhiteSpace(name)) {
 					continue;
+				}
 
 				// Either IMDb or generic syntax matched the line and at least an episode name could be extracted
 				// so search for the corresponding EpisodeEntry and save the data
@@ -367,52 +345,48 @@ namespace EpisodeRenamer
 				Point p;
 
 				// Only episode name
-				if(season < 0 || episode < 0)
-				{
+				if(season < 0 || episode < 0) {
 					// No episode numbers, so take the next element in the list
 					e = (EpisodeEntry)episodes[count];
 
 					// If the episode information is set in the EpisodEentry object, take that one, otherwise guess
 					p = new Point(
 						e.EpisodeNumber.X,
-						e.EpisodeNumber.Y < 0 ? count : e.EpisodeNumber.Y );
+						e.EpisodeNumber.Y < 0 ? count : e.EpisodeNumber.Y);
 				} // Episode name and numbers
-				else
-				{
+				else {
 					p = new Point(season, episode);
 
 					// Find the EpisodeEntry corresponding to the episode number extracted
-					foreach(object o in episodes)
-					{
+					foreach(object o in episodes) {
 						EpisodeEntry tmp = (EpisodeEntry)o;
 
-						if(tmp.EpisodeNumber == p)
-						{
+						if(tmp.EpisodeNumber == p) {
 							e = tmp;
 							break;
 						}
 					}
 
 					// Episode not found, continue with next line
-					if(e == null)
+					if(e == null) {
 						continue;
+					}
 				}
 
-				if(chkUseFolderName.Checked)
+				if(chkUseFolderName.Checked) {
 					e.Series = folderName;
-				else
+				} else {
 					e.ResetSeries();
+				}
 
 				e.NewNameString = line.Trim();
 				e.NewFilename = EpisodeEntry.FormatFilename(e.Series, p, name, Path.GetExtension(e.OldFilename));
 
-				try
-				{
-					if(post != null)
+				try {
+					if(post != null) {
 						e.NewFilename = post.Replace(e.NewFilename, txtReplace.Text);
-				}
-				catch(Exception ex)
-				{
+					}
+				} catch(Exception ex) {
 					Trace.WriteLine("Exception (" + ex.GetType() + ") in ReadNames: regex replace.");
 					Trace.WriteLine(ex.Message);
 					Trace.WriteLine(ex.StackTrace);
@@ -428,176 +402,158 @@ namespace EpisodeRenamer
 			return (count > 0);
 		}
 
-		void ExtractEpisodeInformation(string line, out int season, out int episode, out string name)
-		{
+		void ExtractEpisodeInformation(string line, out int season, out int episode, out string name) {
 			season = -1;
 			episode = -1;
 			name = "";
 
 			// Matches IMDb syntax
-			if(Regex.IsMatch(line, @"Season [0-9]+, Episode [0-9]+.*", EpisodeEntry.DefaultRegexOptions))
-			{
+			if(Regex.IsMatch(line, @"Season [0-9]+, Episode [0-9]+.*", EpisodeEntry.DefaultRegexOptions)) {
 				Match mSeason = Regex.Match(line, @"(?<=Season )[0-9]+", EpisodeEntry.DefaultRegexOptions);
 				Match mEpisode = Regex.Match(line, @"(?<=Episode )[0-9]+", EpisodeEntry.DefaultRegexOptions);
 
-				if(mSeason.Success && mEpisode.Success)
-					try
-					{
+				if(mSeason.Success && mEpisode.Success) {
+					try {
 						season = int.Parse(mSeason.Value);
 						episode = int.Parse(mEpisode.Value);
-					}
-					catch(FormatException ex)
-					{
+					} catch(FormatException ex) {
 						Trace.WriteLine("FormatException in ExtractEpisodeInformation: IMDb syntax season and episode match.");
 						Trace.WriteLine(ex.Message);
 
 						season = -1;
 						episode = -1;
 					}
+				}
 
 				Match m = Regex.Match(line, "(?<=: ).*");
-				if(m.Success)
+				if(m.Success) {
 					name = m.Value;
+				}
 
 			} // Matches TheTVDB syntax
-			else if(Regex.IsMatch(line, @"^[0-9]+ x [0-9]+\t.*", EpisodeEntry.DefaultRegexOptions))
-			{
+			else if(Regex.IsMatch(line, @"^[0-9]+ x [0-9]+\t.*", EpisodeEntry.DefaultRegexOptions)) {
 				Match mSeason = Regex.Match(line, @"^[0-9]+", EpisodeEntry.DefaultRegexOptions);
 				Match mEpisode = Regex.Match(line, @"(?<= x )[0-9]+", EpisodeEntry.DefaultRegexOptions);
 
-				if(mSeason.Success && mEpisode.Success)
-					try
-					{
+				if(mSeason.Success && mEpisode.Success) {
+					try {
 						season = int.Parse(mSeason.Value);
 						episode = int.Parse(mEpisode.Value);
-					}
-					catch(FormatException ex)
-					{
+					} catch(FormatException ex) {
 						Trace.WriteLine("FormatException in ExtractEpisodeInformation: TheTVDB syntax season and episode match.");
 						Trace.WriteLine(ex.Message);
 
 						season = -1;
 						episode = -1;
 					}
+				}
 
 				Match m = Regex.Match(line, @"(?<=[0-9]+ x [0-9]+\t)[^\t\n]+");
-				if(m.Success)
+				if(m.Success) {
 					name = m.Value;
+				}
 
 			} // Matches old TheTVDB syntax
-			else if(Regex.IsMatch(line, @"^[0-9]+ - [0-9]+\t.*", EpisodeEntry.DefaultRegexOptions))
-			{
+			else if(Regex.IsMatch(line, @"^[0-9]+ - [0-9]+\t.*", EpisodeEntry.DefaultRegexOptions)) {
 				Match mSeason = Regex.Match(line, @"^[0-9]+", EpisodeEntry.DefaultRegexOptions);
 				Match mEpisode = Regex.Match(line, @"(?<= - )[0-9]+", EpisodeEntry.DefaultRegexOptions);
 
-				if(mSeason.Success && mEpisode.Success)
-					try
-					{
+				if(mSeason.Success && mEpisode.Success) {
+					try {
 						season = int.Parse(mSeason.Value);
 						episode = int.Parse(mEpisode.Value);
-					}
-					catch(FormatException ex)
-					{
+					} catch(FormatException ex) {
 						Trace.WriteLine("FormatException in ExtractEpisodeInformation: old TheTVDB syntax season and episode match.");
 						Trace.WriteLine(ex.Message);
 
 						season = -1;
 						episode = -1;
 					}
+				}
 
 				Match m = Regex.Match(line, @"(?<=[0-9]+ - [0-9]+\t)[^\t\n]+");
-				if(m.Success)
+				if(m.Success) {
 					name = m.Value;
+				}
 
 			} // Matches generic syntax
-			else
-			{
+			else {
 				Match m = Regex.Match(line, EpisodeEntry.RegexEpisodeNumberMatchString, EpisodeEntry.DefaultRegexOptions);
 
-				// If episode information is found, extract it
-				if(m.Success)
-				{
+				if(m.Success) {
+					// If episode information is found, extract it
 					Point p = EpisodeEntry.GetEpisodeInfo(m.Value);
 					season = p.X;
 					episode = p.Y;
 
-					if(m.Index + m.Length < line.Length)
+					if(m.Index + m.Length < line.Length) {
 						name = line.Substring(m.Index + m.Length);
-					else if(line.Length - m.Length > 0)
+					} else if(line.Length - m.Length > 0) {
 						name = line.Substring(0, line.Length - m.Length);
-					else
+					} else {
 						name = "";
-				} // No episode information found, so use the whole line as name and guess the numbers
-				else
+					}
+				} else {
+					// No episode information found, so use the whole line as name and guess the numbers
 					name = line;
+				}
 			}
 		}
 
 		/// <summary>
 		/// Rereads all values and auto-sizes the columns of the dataGridView.
 		/// </summary>
-		void UpdateGridView()
-		{
+		void UpdateGridView() {
 			int tmp = dataGridView.FirstDisplayedScrollingRowIndex;
 			episodes.ResetBindings(false);
 			dataGridView.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
-			if(episodes.Count > 0)
+			if(episodes.Count > 0) {
 				dataGridView.FirstDisplayedScrollingRowIndex = (tmp < episodes.Count ? tmp : episodes.Count - 1);
+			}
 		}
 
-		private void SetReplaceGroup(bool visible)
-		{
+		private void SetReplaceGroup(bool visible) {
 			Trace.WriteLine("SetReplaceGroup called: " + visible);
 			Trace.WriteLine("grpReplace.Visible: " + grpReplace.Visible);
 
-			if(grpReplace.Visible != visible)
-			{
+			if(grpReplace.Visible != visible) {
 				grpReplace.Visible = visible;
 				dataGridView.Top += (visible ? grpReplace.Height : -grpReplace.Height);
 				dataGridView.Height += (visible ? -grpReplace.Height : grpReplace.Height);
 			}
 		}
 
-		private bool CheckRegex(string regex)
-		{
-			try
-			{
+		private bool CheckRegex(string regex) {
+			try {
 				Regex r = new Regex(regex);
-			}
-			catch(ArgumentException)
-			{
+			} catch(ArgumentException) {
 				return false;
 			}
 
 			return true;
 		}
 
-		private void ShowToast(string text)
-		{
+		private void ShowToast(string text) {
 			ShowToast("Finished", text);
 		}
 
-		private void ShowToast(string title, string text)
-		{
+		private void ShowToast(string title, string text) {
 			toastQueue.Enqueue(new KeyValuePair<string, string>(title, text));
 			// If no toast is visible, show it immediately
-			if(!panelToast.Visible)
+			if(!panelToast.Visible) {
 				DismissToast();
+			}
 		}
 
-		private void DismissToast()
-		{
-			if(toastQueue.Count > 0)
-			{
+		private void DismissToast() {
+			if(toastQueue.Count > 0) {
 				timerToast.Stop();
 				KeyValuePair<string, string> next = toastQueue.Dequeue();
 				grpToast.Text = next.Key;
 				lblToast.Text = next.Value;
 				panelToast.Visible = true;
 				timerToast.Start();
-			}
-			else
-			{
+			} else {
 				panelToast.Visible = false;
 				timerToast.Stop();
 			}
@@ -608,8 +564,7 @@ namespace EpisodeRenamer
 
 		#region events
 
-		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-		{
+		private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
 			UnlinkClipboard();
 			dataGridView.DataSource = null;
 			Settings.Default.WindowPosition = Location;
@@ -619,40 +574,35 @@ namespace EpisodeRenamer
 			Settings.Default.Save();
 		}
 
-		private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-		{
+		private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
 			Process.Start(@"http://msdn.microsoft.com/en-us/library/az24scfc.aspx");
 		}
 
-		private void panelToast_SizeChanged(object sender, EventArgs e)
-		{
+		private void panelToast_SizeChanged(object sender, EventArgs e) {
 			Point p = new Point((Width - panelToast.Width) / 2, (Height - panelToast.Height) / 2);
 			panelToast.Location = p;
 		}
 
-		private void Toast_Click(object sender, EventArgs e)
-		{
+		private void Toast_Click(object sender, EventArgs e) {
 			DismissToast();
 		}
 
-		private void timerToast_Tick(object sender, EventArgs e)
-		{
+		private void timerToast_Tick(object sender, EventArgs e) {
 			DismissToast();
 		}
 
 		// dataGridView
-		private void dataGridView_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
-		{
+		private void dataGridView_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e) {
 			EpisodeEntry entry = episodes[e.RowIndex] as EpisodeEntry;
-			if(entry == null)
+			if(entry == null) {
 				return;
+			}
 
 			e.PaintParts &= ~DataGridViewPaintParts.Background;
 
 			// Determine whether the cell should be painted
 			// with the custom background.
-			if(entry.GetEntryType() != EpisodeEntry.EntryType.None)
-			{
+			if(entry.GetEntryType() != EpisodeEntry.EntryType.None) {
 				// Calculate the bounds of the row.
 				Rectangle rowBounds = new Rectangle(
 					0,
@@ -662,8 +612,7 @@ namespace EpisodeRenamer
 
 				// Paint the custom background.
 				Color color;
-				switch(entry.GetEntryType())
-				{
+				switch(entry.GetEntryType()) {
 					case EpisodeEntry.EntryType.Green:
 						color = Color.Green;
 						break;
@@ -689,16 +638,15 @@ namespace EpisodeRenamer
 			}
 		}
 
-		private void dataGridView_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
-		{
+		private void dataGridView_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e) {
 			EpisodeEntry entry = episodes[e.RowIndex] as EpisodeEntry;
-			if(entry == null)
+			if(entry == null) {
 				return;
+			}
 
 			// Determine whether the cell should be painted
 			// with the custom foreground.
-			if((entry.GetEntryType() != EpisodeEntry.EntryType.None) && !entry.Enabled)
-			{
+			if((entry.GetEntryType() != EpisodeEntry.EntryType.None) && !entry.Enabled) {
 				// Calculate the bounds of the row.
 				Rectangle rowBounds = new Rectangle(
 					0,
@@ -713,10 +661,8 @@ namespace EpisodeRenamer
 			}
 		}
 
-		private void chkHeader_OnCheckBoxClicked(object sender, DataGridViewCheckBoxHeaderCellEventArgs e)
-		{
-			foreach(EpisodeEntry entry in episodes)
-			{
+		private void chkHeader_OnCheckBoxClicked(object sender, DataGridViewCheckBoxHeaderCellEventArgs e) {
+			foreach(EpisodeEntry entry in episodes) {
 				entry.Enabled = e.Checked;
 			}
 
@@ -724,15 +670,14 @@ namespace EpisodeRenamer
 			dataGridView.Refresh();
 		}
 
-		private void dataGridView_CurrentCellDirtyStateChanged(object sender, EventArgs e)
-		{
-			if(dataGridView.CurrentCellAddress.X == 0)
+		private void dataGridView_CurrentCellDirtyStateChanged(object sender, EventArgs e) {
+			if(dataGridView.CurrentCellAddress.X == 0) {
 				dataGridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
+			}
 		}
 
 		// HELP
-		private void lblChooseFirst_Click(object sender, EventArgs e)
-		{
+		private void lblChooseFirst_Click(object sender, EventArgs e) {
 			string help = @"Firstly, choose the folder containing the episode files to be renamed,
 or enter the path manually.
 Then you can choose between using a file containing the episode names, pasting the episode names from the clipboard or automatically reading the episode names from the clipboard as they are copied, one at a time.
@@ -744,8 +689,7 @@ You can check 'Use folder name for series title' if the original filenames do no
 			MessageBox.Show(help, "Help", MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
 
-		private void lblEditWrong_Click(object sender, EventArgs e)
-		{
+		private void lblEditWrong_Click(object sender, EventArgs e) {
 			string help = @"When the filenames and episode names are read, you can edit each file manually to change the new name, add one, or prevent the file from being renamed.
 Files being renamed are marked green, files that already have an episode name are marked yellow, files that do not contain season or episode information are marked red and files without a new episode name are marked grey.
 
@@ -756,10 +700,8 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 		}
 
 		// INPUT
-		private void btnChooseFolder_Click(object sender, EventArgs e)
-		{
-			if(openFolder.ShowDialog() == DialogResult.OK)
-			{
+		private void btnChooseFolder_Click(object sender, EventArgs e) {
+			if(openFolder.ShowDialog() == DialogResult.OK) {
 				txtEpisodeFolder.Text = openFolder.SelectedPath;
 				openNameFile.InitialDirectory = openFolder.SelectedPath;
 				saveClipboardData.InitialDirectory = openFolder.SelectedPath;
@@ -767,35 +709,33 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 			}
 		}
 
-		private void btnChooseNameFile_Click(object sender, EventArgs e)
-		{
-			if(openNameFile.ShowDialog() == DialogResult.OK)
-			{
+		private void btnChooseNameFile_Click(object sender, EventArgs e) {
+			if(openNameFile.ShowDialog() == DialogResult.OK) {
 				txtNameFile.ReadOnly = false;
 				MonitoringClipboard = false;
 				NamesFromClipboard = false;
 				chkMonitorClipboard.Checked = false;
 
 				txtNameFile.Text = openNameFile.FileName;
-				
-				if(btnReadNames.Enabled)
+
+				if(btnReadNames.Enabled) {
 					btnReadNames.PerformClick();
+				}
 			}
 		}
 
-		private void txtEpisodeFolder_TextChanged(object sender, EventArgs e)
-		{
-			if(!Directory.Exists(txtEpisodeFolder.Text))
+		private void txtEpisodeFolder_TextChanged(object sender, EventArgs e) {
+			if(!Directory.Exists(txtEpisodeFolder.Text)) {
 				InvalidateFilenames();
+			}
 		}
 
-		private void txtEpisodeFolder_KeyDown(object sender, KeyEventArgs e)
-		{
-			switch(e.KeyData)
-			{
+		private void txtEpisodeFolder_KeyDown(object sender, KeyEventArgs e) {
+			switch(e.KeyData) {
 				case Keys.Enter:
-					if(!string.IsNullOrWhiteSpace(txtEpisodeFolder.Text))
+					if(!string.IsNullOrWhiteSpace(txtEpisodeFolder.Text)) {
 						btnReadFiles.PerformClick();
+					}
 					break;
 
 				default:
@@ -805,21 +745,20 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 			e.SuppressKeyPress = true;
 		}
 
-		private void txtNameFile_TextChanged(object sender, EventArgs e)
-		{
-			if(File.Exists(txtNameFile.Text) || MonitoringClipboard || NamesFromClipboard || (txtNameFile.Text == ""))
+		private void txtNameFile_TextChanged(object sender, EventArgs e) {
+			if(File.Exists(txtNameFile.Text) || MonitoringClipboard || NamesFromClipboard || (txtNameFile.Text == "")) {
 				return;
-				
+			}
+
 			InvalidateFilenames();
 		}
 
-		private void txtNameFile_KeyDown(object sender, KeyEventArgs e)
-		{
-			switch(e.KeyData)
-			{
+		private void txtNameFile_KeyDown(object sender, KeyEventArgs e) {
+			switch(e.KeyData) {
 				case Keys.Enter:
-					if(!string.IsNullOrWhiteSpace(txtNameFile.Text))
+					if(!string.IsNullOrWhiteSpace(txtNameFile.Text)) {
 						btnReadNames.PerformClick();
+					}
 					break;
 
 				default:
@@ -829,15 +768,13 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 			e.SuppressKeyPress = true;
 		}
 
-		private void btnSetPrefix_Click(object sender, EventArgs e)
-		{
+		private void btnSetPrefix_Click(object sender, EventArgs e) {
 			frmChangePrefix.EpisodePrefix = EpisodeEntry.EpisodePrefix;
 			frmChangePrefix.SeasonPrefix = EpisodeEntry.SeasonPrefix;
 			frmChangePrefix.Separator = EpisodeEntry.Separator;
 			frmChangePrefix.EpisodeNumberDigits = EpisodeEntry.EpisodeNumberDigits;
 
-			if(frmChangePrefix.ShowDialog(this) == DialogResult.OK)
-			{
+			if(frmChangePrefix.ShowDialog(this) == DialogResult.OK) {
 				EpisodeEntry.EpisodePrefix = frmChangePrefix.EpisodePrefix;
 				EpisodeEntry.SeasonPrefix = frmChangePrefix.SeasonPrefix;
 				EpisodeEntry.Separator = frmChangePrefix.Separator;
@@ -851,136 +788,122 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 			}
 		}
 
-		private void chkUseFolderName_CheckedChanged(object sender, EventArgs e)
-		{
+		private void chkUseFolderName_CheckedChanged(object sender, EventArgs e) {
 			Settings.Default.UseFolder = chkUseFolderName.Checked;
 			Settings.Default.Save();
 
-			if(btnReadNames.Enabled)
+			if(btnReadNames.Enabled) {
 				btnReadNames.PerformClick();
-		}
-
-		private void chkIgnoreSample_CheckedChanged(object sender, EventArgs e)
-		{
-			if(btnReadFiles.Enabled)
-				btnReadFiles.PerformClick();
-		}
-
-		private void chkPostReplace_CheckedChanged(object sender, EventArgs e)
-		{
-			SetReplaceGroup(chkPostReplace.Checked);
-		}
-
-		private void txtRegex_TextChanged(object sender, EventArgs e)
-		{
-			TextBox t = sender as TextBox;
-
-			if(t != null)
-			{
-				if(CheckRegex(t.Text))
-					t.ForeColor = Color.Black;
-				else
-					t.ForeColor = Color.Red;
 			}
 		}
 
-		private void linkShowIgnored_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-		{
+		private void chkIgnoreSample_CheckedChanged(object sender, EventArgs e) {
+			if(btnReadFiles.Enabled) {
+				btnReadFiles.PerformClick();
+			}
+		}
+
+		private void chkPostReplace_CheckedChanged(object sender, EventArgs e) {
+			SetReplaceGroup(chkPostReplace.Checked);
+		}
+
+		private void txtRegex_TextChanged(object sender, EventArgs e) {
+			TextBox t = sender as TextBox;
+
+			if(t != null) {
+				if(CheckRegex(t.Text)) {
+					t.ForeColor = Color.Black;
+				} else {
+					t.ForeColor = Color.Red;
+				}
+			}
+		}
+
+		private void linkShowIgnored_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
 			StringBuilder sb = new StringBuilder();
-			foreach(string s in ignoredFiles)
+			foreach(string s in ignoredFiles) {
 				sb.AppendLine(s);
+			}
 			frmShowIgnored.Data = sb.ToString();
 			frmShowIgnored.ShowDialog(this);
 		}
 
 		// OUTPUT
-		private void btnReadFiles_Click(object sender, EventArgs e)
-		{
+		private void btnReadFiles_Click(object sender, EventArgs e) {
 			InvalidateFilenames();
-			if(Directory.Exists(txtEpisodeFolder.Text))
-			{
-				if(ReadFiles(txtEpisodeFolder.Text))
-				{
-					if(episodes.Count > 0)
-						dataGridView.FirstDisplayedScrollingRowIndex = episodes.Count - 1;
-					string episodeNameFileName = Path.Combine(txtEpisodeFolder.Text, defaultNameFileName);
-					if(File.Exists(episodeNameFileName))
-					{
-						if(dropped)
-						{
-							Trace.WriteLine("In btnReadFiles_Click: dropped == true -> disabling clipboard data.");
-							MonitoringClipboard = false;
-							NamesFromClipboard = false;
-							txtNameFile.Text = episodeNameFileName;
-							dropped = false;
-						}
-						if(!NamesFromClipboard)
-							txtNameFile.Text = episodeNameFileName;
-						btnReadNames.PerformClick();
-					}
-					else if(NamesFromClipboard)
-						btnReadNames.PerformClick();
-					else
-						UpdateGridView();
-				}
-				else
-					MessageBox.Show("Error reading the files.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
-			else
+			if(!Directory.Exists(txtEpisodeFolder.Text)) {
 				MessageBox.Show("The specified folder does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+			if(!ReadFiles(txtEpisodeFolder.Text)) {
+				MessageBox.Show("Error reading the files.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+			if(episodes.Count > 0) {
+				dataGridView.FirstDisplayedScrollingRowIndex = episodes.Count - 1;
+			}
+			string episodeNameFileName = Path.Combine(txtEpisodeFolder.Text, defaultNameFileName);
+			if(File.Exists(episodeNameFileName)) {
+				if(dropped) {
+					Trace.WriteLine("In btnReadFiles_Click: dropped == true -> disabling clipboard data.");
+					MonitoringClipboard = false;
+					NamesFromClipboard = false;
+					txtNameFile.Text = episodeNameFileName;
+					dropped = false;
+				}
+				if(!NamesFromClipboard) {
+					txtNameFile.Text = episodeNameFileName;
+				}
+				btnReadNames.PerformClick();
+			} else if(NamesFromClipboard) {
+				btnReadNames.PerformClick();
+			} else {
+				UpdateGridView();
+			}
 		}
 
-		private void btnReadNames_Click(object sender, EventArgs e)
-		{
-			if(MonitoringClipboard)
-			{
+		private void btnReadNames_Click(object sender, EventArgs e) {
+			if(MonitoringClipboard) {
 				chkMonitorClipboard.Checked = false;
 			}
 
-			if(NamesFromClipboard)
-			{
-				if(ReadNames(clipboardData))
+			if(NamesFromClipboard) {
+				if(ReadNames(clipboardData)) {
 					UpdateGridView();
-				else
+				} else {
 					return;
+				}
 				// Set episode file in same folder as episodes in case another one is still selected
-				if(Path.GetDirectoryName(txtEpisodeFolder.Text) != Path.GetDirectoryName(saveClipboardData.FileName))
-				{
+				if(Path.GetDirectoryName(txtEpisodeFolder.Text) != Path.GetDirectoryName(saveClipboardData.FileName)) {
 					saveClipboardData.InitialDirectory = txtEpisodeFolder.Text;
 					saveClipboardData.FileName = Path.Combine(txtEpisodeFolder.Text, defaultNameFileName);
 				}
-			}
-			else
-			{
-				if(txtNameFile.Text == string.Empty)
+			} else {
+				if(txtNameFile.Text == string.Empty) {
 					return;
+				}
 
-				if(File.Exists(txtNameFile.Text))
-				{
-					try
-					{
-						// Ignore huge files, prevents freeze when video file is dropped
-						FileInfo fi = new FileInfo(txtNameFile.Text);
-						if(fi.Length > 1024 * 1024)
-							return;
-
-						if(ReadNames(File.ReadAllLines(txtNameFile.Text)))
-							UpdateGridView();
-						else
-							throw new Exception("Error reading the file.");
-						// Set save file name to the existing file, most likely the same one will be used if it is overwritten with new data.
-						saveClipboardData.InitialDirectory = Path.GetDirectoryName(txtNameFile.Text);
-						saveClipboardData.FileName = txtNameFile.Text;
-					}
-					catch(Exception ex)
-					{
-						MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				if(!File.Exists(txtNameFile.Text)) {
+					MessageBox.Show("The specified file doesn't exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return;
+				}
+				try {
+					// Ignore huge files, prevents freeze when video file is dropped
+					FileInfo fi = new FileInfo(txtNameFile.Text);
+					if(fi.Length > 1024 * 1024) {
 						return;
 					}
-				}
-				else
-				{
-					MessageBox.Show("The specified file doesn't exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+					if(ReadNames(File.ReadAllLines(txtNameFile.Text))) {
+						UpdateGridView();
+					} else {
+						throw new Exception("Error reading the file.");
+					}
+					// Set save file name to the existing file, most likely the same one will be used if it is overwritten with new data.
+					saveClipboardData.InitialDirectory = Path.GetDirectoryName(txtNameFile.Text);
+					saveClipboardData.FileName = txtNameFile.Text;
+				} catch(Exception ex) {
+					MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					return;
 				}
 			}
@@ -989,46 +912,43 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 			lblEditWrong.Visible = true;
 		}
 
-		private void btnRename_Click(object sender, EventArgs e)
-		{
+		private void btnRename_Click(object sender, EventArgs e) {
 			List<Exception> exceptions = new List<Exception>();
 			int renamed = 0;
 
-			foreach(EpisodeEntry item in episodes)
-			{
-				if(item.PerformRename())
-				{
-					if(item.Moved)
+			foreach(EpisodeEntry item in episodes) {
+				if(item.PerformRename()) {
+					if(item.Moved) {
 						renamed++;
-				}
-				else
+					}
+				} else
 					exceptions.Add(item.MoveException);
 			}
 
 			StringBuilder sb = new StringBuilder();
-			if(renamed == 1)
+			if(renamed == 1) {
 				sb.Append("One file has");
-			else
+			} else {
 				sb.AppendFormat("{0} files have", renamed);
+			}
 			sb.AppendLine(" been renamed.");
 
 			string series = Path.GetFileName(txtEpisodeFolder.Text);
 			history.Remove(series);
 			history.Add(series);
-			while(history.Count > 20)
+			while(history.Count > 20) {
 				history.RemoveAt(0);
+			}
 
-			if(exceptions.Count > 0)
-			{
+			if(exceptions.Count > 0) {
 				sb.AppendLine("One or more errors occurred while renaming the files:");
 
-				foreach(Exception ex in exceptions)
+				foreach(Exception ex in exceptions) {
 					sb.AppendLine(ex.Message);
+				}
 
 				MessageBox.Show(sb.ToString(), "Finished", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-			}
-			else
-			{
+			} else {
 				episodes.Clear();
 				InvalidateFilenames();
 				btnReadFiles.PerformClick();
@@ -1036,11 +956,11 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 			}
 		}
 
-		private void btnHistory_Click(object sender, EventArgs e)
-		{
+		private void btnHistory_Click(object sender, EventArgs e) {
 			StringBuilder sb = new StringBuilder();
-			foreach(string s in history)
+			foreach(string s in history) {
 				sb.AppendLine(s);
+			}
 			frmHistory.Data = sb.ToString();
 			frmHistory.ShowDialog(this);
 		}
@@ -1054,24 +974,18 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 		/// Checks, if the nextClipboardViewer field differs from IntPtr.Zero, and if it does, 
 		/// calls ChangeClipboardChain to unlink this window from the clipboard watching chain.
 		/// </summary>
-		void UnlinkClipboard()
-		{
-			if(nextClipboardViewerSet)
-			{
+		void UnlinkClipboard() {
+			if(nextClipboardViewerSet) {
 				ChangeClipboardChain(this.Handle, nextClipboardViewer);
 				nextClipboardViewer = IntPtr.Zero;
 				nextClipboardViewerSet = false;
 			}
 		}
 
-		private void btnPasteNames_Click(object sender, EventArgs e)
-		{
-			try
-			{
+		private void btnPasteNames_Click(object sender, EventArgs e) {
+			try {
 				frmCheckClipboard.Data = Clipboard.ContainsText() ? Clipboard.GetText() : "";
-			}
-			catch(Exception ex)
-			{
+			} catch(Exception ex) {
 				Trace.WriteLine("Exception (" + ex.GetType() + ") in btnPasteNames_Click: get data from clipboard.");
 				Trace.WriteLine(ex.Message);
 				Trace.WriteLine(ex.StackTrace);
@@ -1079,23 +993,17 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 				frmCheckClipboard.Data = "Error retrieving data from clipboard.";
 			}
 
-			if((frmCheckClipboard.ShowDialog(this) == DialogResult.OK) && (frmCheckClipboard.Data != ""))
-			{
+			if((frmCheckClipboard.ShowDialog(this) == DialogResult.OK) && (frmCheckClipboard.Data != "")) {
 				NamesFromClipboard = true;
 				clipboardData = frmCheckClipboard.Data;
 				InvalidateFilenames();
-			}
-			else
-			{
-				if(string.IsNullOrWhiteSpace(clipboardData))
-					NamesFromClipboard = false;
+			} else if(string.IsNullOrWhiteSpace(clipboardData)) {
+				NamesFromClipboard = false;
 			}
 		}
 
-		private void btnEditClipboardData_Click(object sender, EventArgs e)
-		{
-			if(string.IsNullOrEmpty(clipboardData))
-			{
+		private void btnEditClipboardData_Click(object sender, EventArgs e) {
+			if(string.IsNullOrEmpty(clipboardData)) {
 				btnEditClipboardData.Enabled = false;
 				MessageBox.Show("The clipboard data is empty.");
 				NamesFromClipboard = false;
@@ -1104,42 +1012,33 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 
 			frmCheckClipboard.Data = clipboardData;
 
-			if(frmCheckClipboard.ShowDialog(this) == DialogResult.OK)
-			{
-				if(string.IsNullOrWhiteSpace(frmCheckClipboard.Data))
+			if(frmCheckClipboard.ShowDialog(this) == DialogResult.OK) {
+				if(string.IsNullOrWhiteSpace(frmCheckClipboard.Data)) {
 					NamesFromClipboard = false;
+				}
 
 				clipboardData = frmCheckClipboard.Data;
 			}
 		}
 
-		private void btnSaveClipboardData_Click(object sender, EventArgs e)
-		{
-			if(string.IsNullOrWhiteSpace(clipboardData))
-			{
+		private void btnSaveClipboardData_Click(object sender, EventArgs e) {
+			if(string.IsNullOrWhiteSpace(clipboardData)) {
 				MessageBox.Show("No clipboard data to save.");
 				return;
 			}
 
-			if(saveClipboardData.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-			{
-				try
-				{
+			if(saveClipboardData.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+				try {
 					File.WriteAllText(saveClipboardData.FileName, clipboardData);
-
-				}
-				catch(Exception ex)
-				{
+				} catch(Exception ex) {
 					MessageBox.Show("Error writing the file:" + Environment.NewLine + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 			}
 		}
 
-		private void chkMonitorClipboard_CheckedChanged(object sender, EventArgs e)
-		{
+		private void chkMonitorClipboard_CheckedChanged(object sender, EventArgs e) {
 			// Stop monitoring and check data
-			if(!chkMonitorClipboard.Checked && MonitoringClipboard)
-			{
+			if(!chkMonitorClipboard.Checked && MonitoringClipboard) {
 				MonitoringClipboard = false;
 				NamesFromClipboard = true;
 				clipboardData = sbClipboardData.ToString();
@@ -1147,37 +1046,35 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 			}
 
 			// Start monitoring
-			if(chkMonitorClipboard.Checked && !MonitoringClipboard)
-			{
+			if(chkMonitorClipboard.Checked && !MonitoringClipboard) {
 				MonitoringClipboard = true;
 				sbClipboardData.Clear();
 			}
 		}
 
-		protected override void WndProc(ref Message m)
-		{
+		protected override void WndProc(ref Message m) {
 			// defined in winuser.h
 			const int WM_DRAWCLIPBOARD = 0x0308;
 			const int WM_CHANGECBCHAIN = 0x030D;
 
-			switch(m.Msg)
-			{
+			switch(m.Msg) {
 				case WM_DRAWCLIPBOARD:
-					if(Clipboard.ContainsText())
-					{
+					if(Clipboard.ContainsText()) {
 						sbClipboardData.AppendLine(Clipboard.GetText());
 					}
 
 					// The message is sent to this window causing stack overflow I guess...
-					if(nextClipboardViewer != this.Handle)
+					if(nextClipboardViewer != this.Handle) {
 						SendMessage(nextClipboardViewer, m.Msg, m.WParam, m.LParam);
+					}
 					break;
 
 				case WM_CHANGECBCHAIN:
-					if(m.WParam == nextClipboardViewer)
+					if(m.WParam == nextClipboardViewer) {
 						nextClipboardViewer = m.LParam;
-					else
+					} else {
 						SendMessage(nextClipboardViewer, m.Msg, m.WParam, m.LParam);
+					}
 					break;
 
 				default:
@@ -1186,73 +1083,58 @@ Note that the selected prefixes do affect the episode matching, so setting the r
 			}
 		}
 
-		private void txt_DragDrop(object sender, DragEventArgs e)
-		{
+		private void txt_DragDrop(object sender, DragEventArgs e) {
 			TextBox txt = sender as TextBox;
 
-			if(txt == null)
-			{
-				if(sender == this)
-				{
+			if(txt == null) {
+				if(sender == this) {
 					txt = txtEpisodeFolder;
-				}
-				else
-				{
+				} else {
 					e.Effect = DragDropEffects.None;
 					return;
 				}
 			}
 
-			if((e.AllowedEffect & DragDropEffects.Copy) == DragDropEffects.Copy)
-			{
+			if((e.AllowedEffect & DragDropEffects.Copy) == DragDropEffects.Copy) {
 				e.Effect = DragDropEffects.Copy;
-				if(e.Data.GetDataPresent(typeof(String)))
-				{
+				if(e.Data.GetDataPresent(typeof(String))) {
 					txt.Text = (string)e.Data.GetData(typeof(String));
-				}
-				else if(e.Data.GetDataPresent(DataFormats.FileDrop))
-				{
+				} else if(e.Data.GetDataPresent(DataFormats.FileDrop)) {
 					string[ ] filenames = (string[ ])e.Data.GetData(DataFormats.FileDrop);
-					if(filenames.Length < 1)
+					if(filenames.Length < 1) {
 						return;
+					}
 					txt.Text = filenames[0];
-				}
-				else
-				{
+				} else {
 					e.Effect = DragDropEffects.None;
 					return;
 				}
 
 				this.Activate();
 
-				if(txt == txtEpisodeFolder)
-				{
-					if(File.Exists(txt.Text))
+				if(txt == txtEpisodeFolder) {
+					if(File.Exists(txt.Text)) {
 						txt.Text = Path.GetDirectoryName(txt.Text);
+					}
 
 					dropped = true;
 					btnReadFiles.PerformClick();
-				}
-				else if(txt == txtNameFile)
-				{
+				} else if(txt == txtNameFile) {
 					MonitoringClipboard = false;
 					NamesFromClipboard = false;
-					if(btnReadNames.Enabled) btnReadNames.PerformClick();
+					if(btnReadNames.Enabled) {
+						btnReadNames.PerformClick();
+					}
 				}
 			}
 		}
 
-		private void txt_DragEnter(object sender, DragEventArgs e)
-		{
-			if(e.Data.GetDataPresent(typeof(String)) || e.Data.GetDataPresent(DataFormats.FileDrop))
-			{
-				if((e.AllowedEffect & DragDropEffects.Copy) == DragDropEffects.Copy)
-				{
+		private void txt_DragEnter(object sender, DragEventArgs e) {
+			if(e.Data.GetDataPresent(typeof(String)) || e.Data.GetDataPresent(DataFormats.FileDrop)) {
+				if((e.AllowedEffect & DragDropEffects.Copy) == DragDropEffects.Copy) {
 					e.Effect = DragDropEffects.Copy;
 				}
-			}
-			else
-			{
+			} else {
 				e.Effect = DragDropEffects.None;
 			}
 		}

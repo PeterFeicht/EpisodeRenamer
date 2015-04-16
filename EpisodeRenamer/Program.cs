@@ -15,20 +15,15 @@ namespace EpisodeRenamer
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
-		static void Main(string[] args)
-		{
+		static void Main(string[ ] args) {
+			bool log = false;
 
-			Application.EnableVisualStyles();
-			Application.SetCompatibleTextRenderingDefault(false);
-			MainForm frmMain = null;
+			if(args != null && args.Length > 0) {
+				if(args[0] == "-l" || args[0] == "--log") {
+					log = true;
+				}
 
-			if(args != null && args.Length > 0)
-			{
-				if(args[0] == "-l" || args[0] == "--log")
-					frmMain = new MainForm(true);
-
-				if(args[0] == "-h" || args[0] == "--help")
-				{
+				if(args[0] == "-h" || args[0] == "--help") {
 					AttachConsole(-1);
 					Console.WriteLine();
 					Console.WriteLine("usage: EpisodeRenamer [options]\n\noptions are:\n  -l | --log\n    Create a log file and write debugging information.");
@@ -37,10 +32,9 @@ namespace EpisodeRenamer
 				}
 			}
 
-			if(frmMain == null)
-				frmMain = new MainForm();
-
-			Application.Run(frmMain);
+			Application.EnableVisualStyles();
+			Application.SetCompatibleTextRenderingDefault(false);
+			Application.Run(new MainForm(log));
 		}
 	}
 }

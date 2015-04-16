@@ -13,22 +13,18 @@ namespace EpisodeRenamer
 	{
 		Point p = new Point(2, 15);
 
-		public ChangePrefixForm()
-		{
+		public ChangePrefixForm() {
 			InitializeComponent();
 		}
 
 		/// <summary>
 		/// Gets or sets the prefix for season numbers.
 		/// </summary>
-		public string SeasonPrefix
-		{
-			get
-			{
+		public string SeasonPrefix {
+			get {
 				return txtSeasonPrefix.Text;
 			}
-			set
-			{
+			set {
 				txtSeasonPrefix.Text = value;
 			}
 		}
@@ -36,14 +32,11 @@ namespace EpisodeRenamer
 		/// <summary>
 		/// Gets or sets the prefix for episode numbers.
 		/// </summary>
-		public string EpisodePrefix
-		{
-			get
-			{
+		public string EpisodePrefix {
+			get {
 				return txtEpisodePrefix.Text;
 			}
-			set
-			{
+			set {
 				txtEpisodePrefix.Text = value;
 			}
 		}
@@ -51,14 +44,11 @@ namespace EpisodeRenamer
 		/// <summary>
 		/// Gets or sets the separator between series name and season number or episode number and episode name.
 		/// </summary>
-		public string Separator
-		{
-			get
-			{
+		public string Separator {
+			get {
 				return txtSeparator.Text;
 			}
-			set
-			{
+			set {
 				txtSeparator.Text = value;
 			}
 		}
@@ -66,25 +56,22 @@ namespace EpisodeRenamer
 		/// <summary>
 		/// Gets or sets the minimum number of digits used for season and episode numbers.
 		/// </summary>
-		public int EpisodeNumberDigits
-		{
-			get
-			{
+		public int EpisodeNumberDigits {
+			get {
 				return (int)numDigits.Value;
 			}
-			set
-			{
-				if(value > numDigits.Maximum)
+			set {
+				if(value > numDigits.Maximum) {
 					numDigits.Value = numDigits.Maximum;
-				else if(value < numDigits.Minimum)
+				} else if(value < numDigits.Minimum) {
 					numDigits.Value = numDigits.Minimum;
-				else
+				} else {
 					numDigits.Value = value;
+				}
 			}
 		}
 
-		void UpdateExample()
-		{
+		void UpdateExample() {
 			StringBuilder sb = new StringBuilder("Series");
 			sb.Append(Separator).Append(SeasonPrefix);
 			sb.Append((2).ToString("D" + EpisodeNumberDigits.ToString())).Append(EpisodePrefix);
@@ -94,18 +81,15 @@ namespace EpisodeRenamer
 			lblExample.Text = sb.Append(".mkv").ToString();
 		}
 
-		private void TextBox_TextChanged(object sender, EventArgs e)
-		{
+		private void TextBox_TextChanged(object sender, EventArgs e) {
 			UpdateExample();
 		}
 
-		private void ChangePrefixForm_Load(object sender, EventArgs e)
-		{
+		private void ChangePrefixForm_Load(object sender, EventArgs e) {
 			UpdateExample();
 		}
 
-		private void numDigits_ValueChanged(object sender, EventArgs e)
-		{
+		private void numDigits_ValueChanged(object sender, EventArgs e) {
 			UpdateExample();
 		}
 	}

@@ -7,18 +7,15 @@ namespace EpisodeRenamer
 {
 	public class DataGridViewCheckBoxHeaderCellEventArgs : EventArgs
 	{
-		bool _bChecked;
+		bool mChecked;
 
-		public DataGridViewCheckBoxHeaderCellEventArgs(bool bChecked)
-		{
-			_bChecked = bChecked;
+		public DataGridViewCheckBoxHeaderCellEventArgs(bool bChecked) {
+			mChecked = bChecked;
 		}
 
-		public bool Checked
-		{
-			get
-			{
-				return _bChecked;
+		public bool Checked {
+			get {
+				return mChecked;
 			}
 		}
 	}
