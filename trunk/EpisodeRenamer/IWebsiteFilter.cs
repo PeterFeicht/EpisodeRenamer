@@ -13,24 +13,21 @@ namespace EpisodeRenamer
 		/// <summary>
 		/// Gets the URL to retrieve episode information from.
 		/// </summary>
-		string URL
-		{
+		string URL {
 			get;
 		}
 
 		/// <summary>
 		/// Gets a value indicating, whether episode information has been filtered from the website.
 		/// </summary>
-		bool Filtered
-		{
+		bool Filtered {
 			get;
 		}
 
 		/// <summary>
 		/// Gets the number of episode names present in this instance.
 		/// </summary>
-		int Count
-		{
+		int Count {
 			get;
 		}
 
@@ -39,8 +36,7 @@ namespace EpisodeRenamer
 		/// </summary>
 		/// <param name="idx">Zero-based index of the element to retrieve.</param>
 		/// <returns>The episode name at the specified position.</returns>
-		string this[int idx]
-		{
+		string this[int idx] {
 			get;
 		}
 

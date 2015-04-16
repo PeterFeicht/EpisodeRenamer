@@ -23,8 +23,7 @@ namespace EpisodeRenamer
 
 		public event CheckBoxClickedEventHandler OnCheckBoxClicked;
 
-		public DatagridViewCheckBoxHeaderCell()
-		{
+		public DatagridViewCheckBoxHeaderCell() {
 		}
 
 		protected override void Paint(Graphics graphics,
@@ -37,11 +36,10 @@ namespace EpisodeRenamer
 			string errorText,
 			DataGridViewCellStyle cellStyle,
 			DataGridViewAdvancedBorderStyle advancedBorderStyle,
-			DataGridViewPaintParts paintParts)
-		{
+			DataGridViewPaintParts paintParts) {
 			base.Paint(graphics, clipBounds, cellBounds, rowIndex, dataGridViewElementState, value,
 				formattedValue, errorText, cellStyle, advancedBorderStyle, paintParts);
-			
+
 			Point p = new Point();
 			Size s = CheckBoxRenderer.GetGlyphSize(graphics, CheckBoxState.UncheckedNormal);
 
@@ -51,26 +49,24 @@ namespace EpisodeRenamer
 			checkBoxLocation = p;
 			checkBoxSize = s;
 
-			if(_checked)
+			if(_checked) {
 				_cbState = CheckBoxState.CheckedNormal;
-			else
+			} else {
 				_cbState = CheckBoxState.UncheckedNormal;
+			}
 
 			CheckBoxRenderer.DrawCheckBox(graphics, checkBoxLocation, _cbState);
 		}
 
-		protected override void OnMouseClick(DataGridViewCellMouseEventArgs e)
-		{
+		protected override void OnMouseClick(DataGridViewCellMouseEventArgs e) {
 			Point p = new Point(e.X + _cellLocation.X, e.Y + _cellLocation.Y);
 
 			if((p.X >= checkBoxLocation.X) && (p.X <= checkBoxLocation.X + checkBoxSize.Width) &&
-				(p.Y >= checkBoxLocation.Y) && (p.Y <= checkBoxLocation.Y + checkBoxSize.Height))
-			{
+				(p.Y >= checkBoxLocation.Y) && (p.Y <= checkBoxLocation.Y + checkBoxSize.Height)) {
 				_checked = !_checked;
 				DataGridViewCheckBoxHeaderCellEventArgs ev = new DataGridViewCheckBoxHeaderCellEventArgs(_checked);
 
-				if(OnCheckBoxClicked != null)
-				{
+				if(OnCheckBoxClicked != null) {
 					OnCheckBoxClicked(this, ev);
 					this.DataGridView.InvalidateCell(this);
 				}

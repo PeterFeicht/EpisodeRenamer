@@ -51,8 +51,7 @@ namespace EpisodeRenamer
 		/// <summary>
 		/// Initializes a new instance with <see cref="Enabled"/> set to <value>false</value> and empty filenames.
 		/// </summary>
-		private EpisodeEntry()
-		{
+		private EpisodeEntry() {
 			Enabled = false;
 			NewNameString = "";
 			EpisodeNumber = new Point(-1, -1);
@@ -66,8 +65,7 @@ namespace EpisodeRenamer
 		/// </summary>
 		/// <param name="oldFilename">The old filename to use for this instance.</param>
 		public EpisodeEntry(string oldFilename)
-			: this()
-		{
+			: this() {
 			OldFilename = oldFilename;
 		}
 
@@ -77,8 +75,7 @@ namespace EpisodeRenamer
 		/// <param name="oldFilename">The old filename to use for this instance</param>
 		/// <param name="newFilename">The new filename to use for this instance</param>
 		public EpisodeEntry(string oldFilename, string newFilename)
-			: this(oldFilename, newFilename, true)
-		{
+			: this(oldFilename, newFilename, true) {
 		}
 
 		/// <summary>
@@ -88,8 +85,7 @@ namespace EpisodeRenamer
 		/// <param name="newFilename">The new filename to use for this instance</param>
 		/// <param name="enabled">The value to use for <see cref="Enabled"/>.</param>
 		public EpisodeEntry(string oldFilename, string newFilename, bool enabled)
-			: this()
-		{
+			: this() {
 			OldFilename = oldFilename;
 			NewFilename = newFilename;
 			Enabled = enabled;
@@ -106,16 +102,14 @@ namespace EpisodeRenamer
 		/// <exception cref="System.ArgumentException">Thrown, if the specified file does not exist.</exception>
 		/// <remarks>No exception is thrown if the path supplied is not absolute. However, there is no guarantee on which working directory 
 		/// will be used to calculate the absolute path.</remarks>
-		public string OldFilename
-		{
-			get
-			{
+		public string OldFilename {
+			get {
 				return oldFilename;
 			}
-			set
-			{
-				if(!File.Exists(value))
+			set {
+				if(!File.Exists(value)) {
 					throw new ArgumentException("The file specified does not exist.");
+				}
 
 				oldFilename = Path.GetFileName(value);
 				FilePath = Path.GetDirectoryName(Path.GetFullPath(value));
@@ -123,15 +117,16 @@ namespace EpisodeRenamer
 
 				string[ ] parts = SplitFilename(oldFilename);
 
-				if(parts.Length >= 2)
-				{
+				if(parts.Length >= 2) {
 					Series = parts[0];
 					origSeries = Series;
 
-					if(parts.Length > 2)
-						for(int j = 2; j < parts.Length; j++)
+					if(parts.Length > 2) {
+						for(int j = 2; j < parts.Length; j++) {
 							parts[1] += " " + parts[j];
-					
+						}
+					}
+
 					EpisodeNumber = GetEpisodeInfo(parts[1]);
 				}
 			}
@@ -140,19 +135,15 @@ namespace EpisodeRenamer
 		/// <summary>
 		/// Gets or sets the new filename. Must be a filename without path information.
 		/// </summary>
-		public string NewFilename
-		{
-			get
-			{
+		public string NewFilename {
+			get {
 				return newFilename;
 			}
-			set
-			{
+			set {
 				string temp = Path.GetFileName(value);
-				if(string.IsNullOrEmpty(temp))
+				if(string.IsNullOrEmpty(temp)) {
 					throw new ArgumentException("The specified value is not a proper filename.");
-				else
-				{
+				} else {
 					newFilename = temp;
 					typeCacheDirty = true;
 				}
@@ -162,8 +153,7 @@ namespace EpisodeRenamer
 		/// <summary>
 		/// Gets the path containing the file to be renamed.
 		/// </summary>
-		public string FilePath
-		{
+		public string FilePath {
 			get;
 			private set;
 		}
@@ -171,8 +161,7 @@ namespace EpisodeRenamer
 		/// <summary>
 		/// Gets or sets whether the rename action will be performed when <see cref="PerformRename"/> is called.
 		/// </summary>
-		public bool Enabled
-		{
+		public bool Enabled {
 			get;
 			set;
 		}
@@ -180,8 +169,7 @@ namespace EpisodeRenamer
 		/// <summary>
 		/// Gets whether the file has already been renamed.
 		/// </summary>
-		public bool Moved
-		{
+		public bool Moved {
 			get;
 			private set;
 		}
@@ -189,8 +177,7 @@ namespace EpisodeRenamer
 		/// <summary>
 		/// Gets the Exception that occurred when trying to move the file in case <see cref="PerformRename"/> returned <c>false</c>, or <c>null</c> if no exception occurred.
 		/// </summary>
-		public Exception MoveException
-		{
+		public Exception MoveException {
 			get;
 			private set;
 		}
@@ -198,8 +185,7 @@ namespace EpisodeRenamer
 		/// <summary>
 		/// Gets or sets the line of episode names corresponding to this rename action.
 		/// </summary>
-		public string NewNameString
-		{
+		public string NewNameString {
 			get;
 			set;
 		}
@@ -209,8 +195,7 @@ namespace EpisodeRenamer
 		/// <para>The X and Y coordinates of the Point correspond to the Season and Episode numbers respectively.
 		/// In case the episode number cannot be extracted from the old filename, the coordinates are set to <c>-1</c>.</para>
 		/// </summary>
-		public Point EpisodeNumber
-		{
+		public Point EpisodeNumber {
 			get;
 			private set;
 		}
@@ -220,8 +205,7 @@ namespace EpisodeRenamer
 		/// </summary>
 		/// <remarks>In case the name cannot be extracted, the value is set to <c>null</c>.</remarks>
 		/// <see cref="ResetSeries"/>
-		public string Series
-		{
+		public string Series {
 			get;
 			set;
 		}
@@ -235,22 +219,20 @@ namespace EpisodeRenamer
 		/// Renames the file in <see cref="OldFilename"/> to the name in <see cref="NewFilename"/> if <see cref="Enabled"/> is set to <value>true</value>.
 		/// </summary>
 		/// <returns><c>true</c> if the rename was successful or <see cref="Enabled"/> is set to <c>false</c>, otherwise <c>false</c>.</returns>
-		public bool PerformRename()
-		{
-			if(!Enabled || Moved)
+		public bool PerformRename() {
+			if(!Enabled || Moved) {
 				return true;
-			if(oldFilename == newFilename)
+			}
+			if(oldFilename == newFilename) {
 				return true;
+			}
 
 			Enabled = false;
 
-			try
-			{
+			try {
 				FileInfo f = new FileInfo(Path.Combine(FilePath, oldFilename));
 				f.MoveTo(Path.Combine(FilePath, newFilename));
-			}
-			catch(Exception ex)
-			{
+			} catch(Exception ex) {
 				MoveException = ex;
 				return false;
 			}
@@ -266,29 +248,21 @@ namespace EpisodeRenamer
 		/// <returns>The determined entry type, it is not guaranteed to match the real type, only a guess.</returns>
 		/// <remarks>Note that the values of <see cref="EpisodeEntry.Separator"/>, <see cref="EpisodeEntry.SeasonPrefix"/> and 
 		/// <see cref="EpisodeEntry.EpisodePrefix"/> do affect the operation of this method.</remarks>
-		public EntryType GetEntryType()
-		{
-			if(typeCacheDirty)
-			{
-				if(string.IsNullOrEmpty(newFilename))
-				{
-					if(string.IsNullOrEmpty(oldFilename))
+		public EntryType GetEntryType() {
+			if(typeCacheDirty) {
+				if(string.IsNullOrEmpty(newFilename)) {
+					if(string.IsNullOrEmpty(oldFilename)) {
 						typeCache = EntryType.None;
-					else
+					} else {
 						typeCache = EntryType.Gray;
-				}
-				else if(newFilename == oldFilename)
-				{
+					}
+				} else if(newFilename == oldFilename) {
 					typeCache = EntryType.Blue;
-				}
-				else
-				{
+				} else {
 					string name = Path.GetFileNameWithoutExtension(oldFilename);
-
 					string[ ] parts = SplitFilename(name);
 
-					switch(parts.Length)
-					{
+					switch(parts.Length) {
 						case 1:
 							// Old filename does not contain season or episode information that could be matched
 							typeCache = EntryType.Red;
@@ -296,16 +270,18 @@ namespace EpisodeRenamer
 
 						case 2:
 							// Try splitting the second part in case the name was matched by generic season number expressions
-							if(string.IsNullOrWhiteSpace(EpisodePrefix))
+							if(string.IsNullOrWhiteSpace(EpisodePrefix)) {
 								parts = Regex.Split(parts[1], RegexEpisodeNumberMatchString, DefaultRegexOptions);
-							else
+							} else {
 								parts = RemoveEmptyStrings(Regex.Split(parts[1], "(.*" + Regex.Escape(EpisodePrefix) + "[0-9]{1,3})([^0-9]+)", DefaultRegexOptions));
+							}
 
 							// Second part may contain episode name
-							if((parts.Length == 2) && string.IsNullOrEmpty(parts[0]))
+							if((parts.Length == 2) && string.IsNullOrEmpty(parts[0])) {
 								typeCache = EntryType.Yellow;
-							else
+							} else {
 								typeCache = EntryType.Green;
+							}
 
 							break;
 
@@ -336,8 +312,7 @@ namespace EpisodeRenamer
 		/// <see cref="EpisodePrefix"/> or <see cref="SeasonPrefix"/> are changed. Because these properties affect the 
 		/// behaviour of GetEntryType, it might be necessary to call it with <paramref name="forceRebuild"/> set to <c>true</c> 
 		/// to determine the new entry type.</remarks>
-		public EntryType GetEntryType(bool forceRebuild)
-		{
+		public EntryType GetEntryType(bool forceRebuild) {
 			typeCacheDirty = typeCacheDirty || forceRebuild;
 
 			return GetEntryType();
@@ -350,24 +325,25 @@ namespace EpisodeRenamer
 		/// <returns>An array containing all the parts of the filename.</returns>
 		/// <remarks>All the parts concatenated to a single string may not give the original filename, as parts are removed when matching 
 		/// possible separators.</remarks>
-		private string[ ] SplitFilename(string name)
-		{
+		private string[ ] SplitFilename(string name) {
 			string[ ] parts = name.Split(new string[ ] { Separator }, StringSplitOptions.RemoveEmptyEntries);
-			if(!string.IsNullOrWhiteSpace(SeasonPrefix) && (parts.Length == 1))
+			if(!string.IsNullOrWhiteSpace(SeasonPrefix) && (parts.Length == 1)) {
 				parts = RemoveEmptyStrings(Regex.Split(name, "(" + SeasonPrefix + ")([0-9].*)", DefaultRegexOptions));
-			if(parts.Length == 1)
+			}
+			if(parts.Length == 1) {
 				parts = RemoveEmptyStrings(Regex.Split(name, @"\.(s[0-9].*)", DefaultRegexOptions));
-			if(parts.Length == 1)
+			}
+			if(parts.Length == 1) {
 				parts = RemoveEmptyStrings(Regex.Split(name, " (s[0-9].*)", DefaultRegexOptions));
-			if(parts.Length == 1)
+			}
+			if(parts.Length == 1) {
 				parts = RemoveEmptyStrings(Regex.Split(name, "-(s[0-9].*)", DefaultRegexOptions));
+			}
 
-			if(parts.Length == 1)
-			{
+			if(parts.Length == 1) {
 				Match m = Regex.Match(parts[0], RegexEpisodeNumberMatchString, DefaultRegexOptions);
 
-				if(m.Success)
-				{
+				if(m.Success) {
 					string part = parts[0];
 					string[ ] a = new string[3];
 					a[0] = part.Substring(0, m.Index);
@@ -384,13 +360,11 @@ namespace EpisodeRenamer
 		/// <summary>
 		/// Resets the series name to the value read from the original filename.
 		/// </summary>
-		public void ResetSeries()
-		{
+		public void ResetSeries() {
 			Series = origSeries;
 		}
 
-		public override string ToString()
-		{
+		public override string ToString() {
 			return new StringBuilder("Episode: ")
 				.Append(EpisodeNumber.ToString())
 				.Append(" ")
@@ -402,7 +376,7 @@ namespace EpisodeRenamer
 
 
 		#region static members
-		
+
 		static int episodeNumberDigits;
 
 		/// <summary>
@@ -415,8 +389,7 @@ namespace EpisodeRenamer
 		/// </summary>
 		public const RegexOptions DefaultRegexOptions = RegexOptions.Singleline | RegexOptions.IgnoreCase;
 
-		static EpisodeEntry()
-		{
+		static EpisodeEntry() {
 			Separator = " - ";
 			EpisodePrefix = "x";
 			SeasonPrefix = "";
@@ -429,8 +402,7 @@ namespace EpisodeRenamer
 		/// </summary>
 		/// <remarks>This value is also used when determining the type of the entry.
 		/// Common values are <c>" - "</c>, <c>"."</c> or <c>" "</c>.</remarks>
-		public static string Separator
-		{
+		public static string Separator {
 			get;
 			set;
 		}
@@ -441,8 +413,7 @@ namespace EpisodeRenamer
 		/// </summary>
 		/// <remarks>This value is also used when determining the type of the entry.
 		/// Common values are <c>"x"</c> or <c>"e"</c>.</remarks>
-		public static string EpisodePrefix
-		{
+		public static string EpisodePrefix {
 			get;
 			set;
 		}
@@ -453,8 +424,7 @@ namespace EpisodeRenamer
 		/// </summary>
 		/// <remarks>This value is also used when determining the type of the entry.
 		/// Common values are <c>""</c> or <c>"s"</c>.</remarks>
-		public static string SeasonPrefix
-		{
+		public static string SeasonPrefix {
 			get;
 			set;
 		}
@@ -464,20 +434,18 @@ namespace EpisodeRenamer
 		/// The default value is <c>2</c>
 		/// </summary>
 		/// <remarks>This value is only used for output and has no effect on episode number matching.</remarks>
-		public static int EpisodeNumberDigits
-		{
-			get
-			{
+		public static int EpisodeNumberDigits {
+			get {
 				return episodeNumberDigits;
 			}
-			set
-			{
-				if(value > 5)
+			set {
+				if(value > 5) {
 					episodeNumberDigits = 5;
-				else if(value < 1)
+				} else if(value < 1) {
 					episodeNumberDigits = 1;
-				else
+				} else {
 					episodeNumberDigits = value;
+				}
 			}
 		}
 
@@ -486,14 +454,13 @@ namespace EpisodeRenamer
 		/// </summary>
 		/// <param name="arr">The array from which to remove the strings.</param>
 		/// <returns>A new array containing only not empty strings.</returns>
-		public static string[ ] RemoveEmptyStrings(string[ ] arr)
-		{
+		public static string[ ] RemoveEmptyStrings(string[ ] arr) {
 			List<string> l = new List<string>();
 
-			foreach(string temp in arr)
-			{
-				if(!string.IsNullOrWhiteSpace(temp))
+			foreach(string temp in arr) {
+				if(!string.IsNullOrWhiteSpace(temp)) {
 					l.Add(temp);
+				}
 			}
 
 			return l.ToArray();
@@ -507,8 +474,7 @@ namespace EpisodeRenamer
 		/// <param name="episodeNumber">The episode number, the season number being the X- and the episode number being Y-coordinate.</param>
 		/// <param name="extension">The file extension, including the period (e.g. ".avi").</param>
 		/// <returns>The filename corresponding to the input values.</returns>
-		public static string FormatFilename(string series, Point episodeNumber, string extension)
-		{
+		public static string FormatFilename(string series, Point episodeNumber, string extension) {
 			return FormatFilename(series, episodeNumber, "", extension);
 		}
 
@@ -521,20 +487,22 @@ namespace EpisodeRenamer
 		/// <param name="episodeName">The episode name.</param>
 		/// <param name="extension">The file extension, including the period (e.g. ".avi").</param>
 		/// <returns>The filename corresponding to the input values.</returns>
-		public static string FormatFilename(string series, Point episodeNumber, string episodeName, string extension)
-		{
+		public static string FormatFilename(string series, Point episodeNumber, string episodeName, string extension) {
 			StringBuilder sb = new StringBuilder(series.Trim());
 			sb.Append(Separator).Append(SeasonPrefix);
 			sb.Append(episodeNumber.X.ToString("D" + EpisodeNumberDigits.ToString())).Append(EpisodePrefix);
 			sb.Append(episodeNumber.Y.ToString("D" + EpisodeNumberDigits.ToString()));
-			if(!string.IsNullOrWhiteSpace(episodeName))
+			if(!string.IsNullOrWhiteSpace(episodeName)) {
 				sb.Append(Separator).Append(episodeName.Trim());
+			}
 			sb.Append(extension.Trim());
 
-			foreach(char c in Path.GetInvalidFileNameChars())
+			foreach(char c in Path.GetInvalidFileNameChars()) {
 				sb.Replace(c.ToString(), "");
-			foreach(char c in Path.GetInvalidPathChars())
+			}
+			foreach(char c in Path.GetInvalidPathChars()) {
 				sb.Replace(c.ToString(), "");
+			}
 			sb.Replace("  ", " ");
 			sb.Replace("..", ".");
 			sb.Replace("__", "_");
@@ -548,26 +516,22 @@ namespace EpisodeRenamer
 		/// <param name="part">The filename or part of a filename to extract the episode information from.</param>
 		/// <returns>On success, a <see cref="System.Drawing.Point"/> structure with X and Y coordinates set to season and episode number respectively.
 		/// On failure, a <see cref="System.Drawing.Point"/> structure with both X and Y coordinates set to <c>-1</c>.</returns>
-		public static Point GetEpisodeInfo(string part)
-		{
+		public static Point GetEpisodeInfo(string part) {
 			Match m = Regex.Match(part, RegexEpisodeNumberMatchString, DefaultRegexOptions);
 
-			if(m.Success)
-			{
+			if(m.Success) {
 				string[ ] parts = Regex.Split(m.Value, @"(?<=[0-9])[^0-9]+(?=[0-9])", RegexOptions.Singleline);
 
-				if(parts.Length == 2)
-					try
-					{
+				if(parts.Length == 2) {
+					try {
 						int x = int.Parse(parts[0]);
 						int y = int.Parse(parts[1]);
 
 						return new Point(x, y);
-					}
-					catch
-					{
+					} catch {
 						return new Point(-1, -1);
 					}
+				}
 			}
 
 			return new Point(-1, -1);
