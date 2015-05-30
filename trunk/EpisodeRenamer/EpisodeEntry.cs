@@ -344,13 +344,14 @@ namespace EpisodeRenamer
 				Match m = Regex.Match(parts[0], RegexEpisodeNumberMatchString, DefaultRegexOptions);
 
 				if(m.Success) {
-					string part = parts[0];
-					string[ ] a = new string[3];
-					a[0] = part.Substring(0, m.Index);
-					a[1] = m.Value;
-					a[2] = (m.Index + m.Length < part.Length) ? part.Substring(m.Index + m.Length) : "";
-
-					return a;
+					string all = parts[0];
+					bool hasName = (m.Index + m.Length < all.Length);
+					parts = new string[hasName ? 3 : 2];
+					parts[0] = all.Substring(0, m.Index);
+					parts[1] = m.Value;
+					if(hasName) {
+						parts[2] = all.Substring(m.Index + m.Length);
+					}
 				}
 			}
 
