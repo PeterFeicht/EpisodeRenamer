@@ -223,7 +223,7 @@ namespace EpisodeRenamer
 			if(!Enabled || Moved) {
 				return true;
 			}
-			if(oldFilename == newFilename) {
+			if(oldFilename == newFilename || String.IsNullOrEmpty(newFilename)) {
 				return true;
 			}
 
