@@ -65,7 +65,8 @@ namespace EpisodeRenamer
 			@".*\.nfo$",
 			@".*\.jpg$",
 			@".*\.png$",
-			@".*\.ico$" };
+			@".*\.ico$",
+			@".*\.zip$" };
 		Regex[ ] blacklistFilters;
 		readonly Regex sample = new Regex("sample", RegexOptions.IgnoreCase);
 		LinkedList<string> ignoredFiles = new LinkedList<string>();
